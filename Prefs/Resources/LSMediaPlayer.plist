@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>items</key>
+    <array>
+        <dict>
+            <key>cell</key>
+            <string>PSGroupCell</string>
+            <key>label</key>
+            <string>Custom background color</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSSwitchCell</string>
+            <key>label</key>
+            <string>Enabled</string>
+            <key>default</key>
+            <false/>
+            <key>key</key>
+            <string>usePlayerCustomColor</string>
+            <key>defaults</key>
+            <string>com.xyaman.videpreferences</string> 
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSLinkCell</string>
+            <key>cellClass</key>
+            <string>GcColorPickerCell</string>
+            <key>label</key>
+            <string>Custom color</string>
+            <key>fallback</key>
+            <string>000000</string>
+            <key>key</key>
+            <string>playerCustomColor</string>
+            <key>defaults</key>
+            <string>com.xyaman.videpreferences</string>
+        </dict>
+
+        <dict>
+            <key>cell</key>
+            <string>PSGroupCell</string>
+            <key>label</key>
+            <string>Custom tint color</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSSwitchCell</string>
+            <key>label</key>
+            <string>Enabled</string>
+            <key>default</key>
+            <false/>
+            <key>key</key>
+            <string>useTintCustomColor</string>
+            <key>defaults</key>
+            <string>com.xyaman.videpreferences</string> 
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSLinkCell</string>
+            <key>cellClass</key>
+            <string>GcColorPickerCell</string>
+            <key>label</key>
+            <string>Custom color</string>
+            <key>fallback</key>
+            <string>000000</string>
+            <key>key</key>
+            <string>tintCustomColor</string>
+            <key>defaults</key>
+            <string>com.xyaman.videpreferences</string>
+        </dict>
+
+        <!-- Alpha -->
+        <dict>
+            <key>cell</key>
+            <string>PSGroupCell</string>
+            <key>label</key>
+            <string>Media player alpha</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSSliderCell</string>
+            <key>default</key>
+            <real>1</real>
+            <key>min</key>
+            <real>0</real>
+            <key>max</key>
+            <real>1</real>
+            <key>showValue</key>
+            <true/>
+            <key>key</key>
+            <string>playerAlpha</string>
+            <key>defaults</key>
+            <string>com.xyaman.videpreferences</string>
+        </dict>
+
+        <!-- Player Radius -->
+        <dict>
+            <key>cell</key>
+            <string>PSGroupCell</string>
+            <key>label</key>
+            <string>Media player radius</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSSliderCell</string>
+            <key>default</key>
+            <real>13</real>
+            <key>min</key>
+            <real>0</real>
+            <key>max</key>
+            <real>140</real>
+            <key>showValue</key>
+            <true/>
+            <key>key</key>
+            <string>playerRadius</string>
+            <key>defaults</key>
+            <string>com.xyaman.videpreferences</string>
+        </dict>
+
+        
+        <!-- Artwork -->
+        <dict>
+            <key>cell</key>
+            <string>PSGroupCell</string>
+            <key>label</key>
+            <string>Artwork</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSSwitchCell</string>
+            <key>label</key>
+            <string>Hide audio source icon</string>
+            <key>default</key>
+            <false/>
+            <key>key</key>
+            <string>hideSourceIcon</string>
+            <key>defaults</key>
+            <string>com.xyaman.videpreferences</string> 
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSStaticTextCell</string>
+            <key>label</key>
+            <string>Artwork Radius</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSSliderCell</string>
+            <key>default</key>
+            <real>0</real>
+            <key>min</key>
+            <real>0</real>
+            <key>max</key>
+            <real>50</real>
+            <key>showValue</key>
+            <true/>
+            <key>key</key>
+            <string>artworkRadius</string>
+            <key>defaults</key>
+            <string>com.xyaman.videpreferences</string>
+        </dict>
+    </array>
+    <key>title</key>
+    <string>LS Media Player</string>
+</dict>
+</plist>
