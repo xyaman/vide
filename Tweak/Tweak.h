@@ -6,16 +6,27 @@
 // Preferences
 HBPreferences *preferences = nil;
 
-BOOL prefUsePlayerCustomColor = NO;
-NSString *prefPlayerCustomColor = nil;
-NSString *prefPlayerAlpha = nil;
-NSString *prefPlayerRadius = nil;
+BOOL prefUseLSCustomColor = NO;
+NSString *prefLSCustomColor = nil;
+NSString *prefLSAlpha = nil;
+NSString *prefLSRadius = nil;
 
-NSString *prefArtworkRadius = nil;
-BOOL prefHideSourceIcon = NO;
+NSString *prefLSArtworkRadius = nil;
+BOOL prefLSHideSourceIcon = NO;
 
-BOOL prefUseTintCustomColor = NO;
-NSString *prefTintCustomColor = nil;
+BOOL prefUseLSTintCustomColor = NO;
+NSString *prefLSTintCustomColor = nil;
+
+// LS Hiding
+BOOL prefLSHideVolume = NO;
+
+// CC
+BOOL prefUseCCTintCustomColor = NO;
+NSString *prefCCTintCustomColor = nil;
+
+
+NSString *prefCCArtworkRadius = nil;
+BOOL prefCCHideSourceIcon = NO;
 
 
 // @interface CSMediaControlsViewController : UIViewController
@@ -28,6 +39,9 @@ NSString *prefTintCustomColor = nil;
 @end
 
 @interface CSAdjunctItemView : UIView
+@property(nonatomic, retain) NSLayoutDimension *height;
+- (void) setSizeToMimic:(CGSize)arg1;
+- (void) _updateSizeToMimic;
 @end
 
 @interface MTMaterialView : UIView
@@ -51,6 +65,7 @@ NSString *prefTintCustomColor = nil;
 @property(nonatomic,retain) MRUTransportButton *leftButton;
 @property(nonatomic,retain) MRUTransportButton *middleButton;
 @property(nonatomic,retain) MRUTransportButton *rightButton;
+- (void) changeButtonsColor:(UIColor *)tint;
 @end
 
 // Media time slider
@@ -64,7 +79,7 @@ NSString *prefTintCustomColor = nil;
 @end
 
 @interface MPRouteLabel : UILabel
-@property (nonatomic,retain) UILabel * titleLabel;
+@property(nonatomic,retain) UILabel * titleLabel;
 @end
 
 // Media labels
@@ -73,7 +88,8 @@ NSString *prefTintCustomColor = nil;
 @property(nonatomic,retain) UILabel *titleLabel;
 @property(nonatomic,retain) UILabel *subtitleLabel;
 
--(void)updateVisualStyling;
+- (void) colorLabels:(UIColor *)tint;
+- (void) updateVisualStyling;
 @end
 
 @interface MRUNowPlayingControlsView : UIView

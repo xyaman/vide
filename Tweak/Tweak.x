@@ -1,53 +1,50 @@
 #import "Tweak.h"
 
+CSAdjunctItemView *adjunct = nil;
+float adjunctHeight = 0;
+float volHeight = 0;
 
-// Media player controller
-// %hook CSMediaControlsViewController
-// - (void) loadView {
-//     %orig;
 
-//     self.view.clipsToBounds = YES;
+%hook CSMediaControlsViewController
+-(CGRect)_suggestedFrameForMediaControls {
+    CGRect rect = %orig;
+    if(!adjunctHeight) adjunctHeight = rect.size.height;
+    if(prefLSHideVolume) volHeight = 44;
+    return rect;
+}
+%end
 
-//     MRPlatterViewController *pvc = [self valueForKey:@"_platterViewController"];
-//     if (!pvc) return;
-
-//     // Styling
-//     // pvc.view.layer.cornerRadius = [prefPlayerRadius floatValue];
-// }
-// %end
-
-// %hook MRUNowPlayingViewController
-// - (void) viewDidAppear {
-//     %orig;
-
-//     NSLog(@"[VideTweak] %llu", self.context);
-
-//     // [self.view.heightAnchor constraintEqualToConstant:100].active = YES;
-//     self.view.frame = CGRectMake(self.view.frame.origin.x, self.view.frame.origin.y, self.view.frame.size.width, 100);
-// }
-// %end
-
-// Media player main view
+// LS media player main view
 %hook CSAdjunctItemView
+%property(nonatomic, retain) NSLayoutDimension *height;
 - (void) didMoveToWindow {
     %orig;
+
+    adjunct = self;
 
     PLPlatterView *pv = [self valueForKey:@"_platterView"];
 
     // Alpha
-    pv.backgroundView.alpha = [prefPlayerAlpha floatValue];
+    pv.backgroundView.alpha = [prefLSAlpha floatValue];
 
     // Radius
-    pv.backgroundView.layer.cornerRadius = [prefPlayerRadius floatValue];
+    pv.backgroundView.layer.cornerRadius = [prefLSRadius floatValue];
 
     // Background color
-    if(prefUsePlayerCustomColor) pv.backgroundView.backgroundColor = [GcColorPickerUtils colorWithHex:prefPlayerCustomColor];
+    if(prefUseLSCustomColor) pv.backgroundView.backgroundColor = [GcColorPickerUtils colorWithHex:prefLSCustomColor];
 }
+
+- (CGSize)intrinsicContentSize {
+    return CGSizeMake(self.frame.size.width, adjunctHeight - volHeight);
+}
+
 %end
 
-// MRU
-// context == 2 Media Player notification
-// context == 1 CC Media player
+/*----------------------
+   MRU
+   context == 2 LS Media player
+   context == 1 CC Media player
+ -----------------------*/
 
 // Media player controls
 %hook MRUNowPlayingTransportControlsView
@@ -56,28 +53,36 @@
     %orig;
 
     MRUNowPlayingViewController *controller = (MRUNowPlayingViewController *)[self _viewControllerForAncestor];
-    if([controller respondsToSelector:@selector(context)] && controller.context == 2) {
+    long long context = controller.context;
 
-        // Media player buttons
-        if(prefUseTintCustomColor) {
-
-            [self.leftButton setStylingProvider:nil];
-            [self.middleButton setStylingProvider:nil];
-            [self.rightButton setStylingProvider:nil];
-
-            UIColor *tint = [GcColorPickerUtils colorWithHex:prefTintCustomColor];
-
-            if(self.leftButton.imageView.layer.filters.count) self.leftButton.imageView.layer.filters = nil;
-            self.leftButton.imageView.tintColor = tint;
-
-            if(self.middleButton.imageView.layer.filters.count) self.middleButton.imageView.layer.filters = nil;
-            self.middleButton.imageView.tintColor = tint;
-
-            if(self.rightButton.imageView.layer.filters.count) self.rightButton.imageView.layer.filters = nil;
-            self.rightButton.imageView.tintColor = tint;
-        }
+    // LS
+    if(context == 2 && prefUseLSTintCustomColor) {
+        UIColor *tint = [GcColorPickerUtils colorWithHex:prefLSTintCustomColor];
+        [self changeButtonsColor:tint];
+    
+    // CC
+    } else if(context != 2 && prefUseCCTintCustomColor) {
+        UIColor *tint = [GcColorPickerUtils colorWithHex:prefCCTintCustomColor];
+        [self changeButtonsColor:tint];
     }
 
+}
+
+%new
+- (void) changeButtonsColor:(UIColor *)tint {
+    [self.leftButton setStylingProvider:nil];
+    [self.middleButton setStylingProvider:nil];
+    [self.rightButton setStylingProvider:nil];
+
+
+    if(self.leftButton.imageView.layer.filters.count) self.leftButton.imageView.layer.filters = nil;
+    self.leftButton.imageView.tintColor = tint;
+
+    if(self.middleButton.imageView.layer.filters.count) self.middleButton.imageView.layer.filters = nil;
+    self.middleButton.imageView.tintColor = tint;
+
+    if(self.rightButton.imageView.layer.filters.count) self.rightButton.imageView.layer.filters = nil;
+    self.rightButton.imageView.tintColor = tint;
 }
 %end
 
@@ -87,8 +92,15 @@
     %orig;
 
     MRUNowPlayingViewController *controller = (MRUNowPlayingViewController *)[self _viewControllerForAncestor];
-    if([controller respondsToSelector:@selector(context)] && controller.context == 2) {
-        if(prefUseTintCustomColor) self.elapsedTrack.backgroundColor = [GcColorPickerUtils colorWithHex:prefTintCustomColor];
+    long long context = controller.context;
+
+    // LS
+    if(context == 2 && prefUseLSTintCustomColor) {
+        self.elapsedTrack.backgroundColor = [GcColorPickerUtils colorWithHex:prefLSTintCustomColor];
+
+    // CC
+    } else if(context != 2 && prefUseCCTintCustomColor) {
+        self.elapsedTrack.backgroundColor = [GcColorPickerUtils colorWithHex:prefCCTintCustomColor];
     }
 }
 %end
@@ -99,51 +111,97 @@
 - (void) didMoveToWindow {
     %orig;
 
-    MRUNowPlayingViewController *controller = (MRUNowPlayingViewController *)[self _viewControllerForAncestor];
-    if([controller respondsToSelector:@selector(context)] && controller.context == 2) {
+    if(prefLSHideVolume) self.hidden = YES;
 
-        if(prefUseTintCustomColor) self.slider.minimumTrackTintColor = [GcColorPickerUtils colorWithHex:prefTintCustomColor];
+    MRUNowPlayingViewController *controller = (MRUNowPlayingViewController *)[self _viewControllerForAncestor];
+    long long context = controller.context;
+
+    // LS
+    if(context == 2 && prefUseLSTintCustomColor) {
+        self.slider.minimumTrackTintColor = [GcColorPickerUtils colorWithHex:prefLSTintCustomColor];
+
+    // CC
+    } else if(context != 2 && prefUseCCTintCustomColor) {
+        self.slider.minimumTrackTintColor = [GcColorPickerUtils colorWithHex:prefCCTintCustomColor];
     }
 }
+
 %end
 
 // Song artwork
 %hook MRUArtworkView
-- (id) initWithFrame:(CGRect) frame {
-    id orig = %orig;
+- (void) didMoveToWindow {
+    %orig;
 
     self.clipsToBounds = YES;
-    self.layer.cornerRadius = [prefArtworkRadius floatValue]; 
 
-    return orig;
+    MRUNowPlayingViewController *controller = (MRUNowPlayingViewController *)[self _viewControllerForAncestor];
+    if(![controller respondsToSelector:@selector(context)]) return;
+    long long context = controller.context;
+
+    // LS
+    if(context == 2) {
+        self.layer.cornerRadius = [prefLSArtworkRadius floatValue];
+
+    // CC (in this case same as else, but just for maintain the same style)
+    } else if(context != 2) {
+        self.layer.cornerRadius = [prefCCArtworkRadius floatValue];
+    }
 }
 
 // hide src icon
 -(void) setIconImage:(UIImage *)arg1 {
-    prefHideSourceIcon ? %orig(nil) : %orig;
+
+    MRUNowPlayingViewController *controller = (MRUNowPlayingViewController *)[self _viewControllerForAncestor];
+    if(![controller respondsToSelector:@selector(context)]) return %orig;
+    long long context = controller.context;
+
+    // LS
+    if(context == 2 && prefLSHideSourceIcon) {
+        return %orig(nil);
+
+    // CC
+    } else if(context != 2 && prefCCHideSourceIcon) {
+        return %orig(nil);
+    }
+
+    %orig;
 }
 %end
 
-// Media player label
+// Media player labels
 %hook MRUNowPlayingLabelView
 - (void) updateVisualStyling {
     %orig;
 
     MRUNowPlayingViewController *controller = (MRUNowPlayingViewController *)[self _viewControllerForAncestor];
-    if(prefUseTintCustomColor && [controller respondsToSelector:@selector(context)] && controller.context == 2) {
+    if(![controller respondsToSelector:@selector(context)]) return;
+    long long context = controller.context;
 
-        UIColor *tint = [GcColorPickerUtils colorWithHex:prefTintCustomColor];
+    // LS
+    if(context == 2 && prefUseLSTintCustomColor) {
+        UIColor *tint = [GcColorPickerUtils colorWithHex:prefLSTintCustomColor];
+        [self colorLabels:tint];
 
-        if(self.routeLabel.layer.filters.count) self.routeLabel.layer.filters = nil;
-        if(self.routeLabel.titleLabel.layer.filters.count) self.routeLabel.titleLabel.layer.filters = nil;
-        self.routeLabel.textColor = tint;
-        self.routeLabel.titleLabel.textColor = tint;
-
-        // if(self.titleLabel.layer.filters.count) self.titleLabel.layer.filters = nil;
-        self.titleLabel.textColor = tint;
-
-        self.subtitleLabel.textColor = tint;
+    // CC
+    } else if(context != 2 && prefUseCCTintCustomColor) {
+        UIColor *tint = [GcColorPickerUtils colorWithHex:prefCCTintCustomColor];
+        [self colorLabels:tint];
     }
+}
+
+%new
+- (void) colorLabels:(UIColor *)tint {
+
+    if(self.routeLabel.layer.filters.count) self.routeLabel.layer.filters = nil;
+    if(self.routeLabel.titleLabel.layer.filters.count) self.routeLabel.titleLabel.layer.filters = nil;
+    self.routeLabel.textColor = tint;
+    self.routeLabel.titleLabel.textColor = tint;
+
+    // if(self.titleLabel.layer.filters.count) self.titleLabel.layer.filters = nil;
+    self.titleLabel.textColor = tint;
+
+    self.subtitleLabel.textColor = tint;
 }
 %end
 
@@ -151,23 +209,34 @@
 %ctor {
     preferences = [[HBPreferences alloc] initWithIdentifier:@"com.xyaman.videpreferences"];
 
-    // Media player radius
-    [preferences registerObject:&prefPlayerRadius default:@"13" forKey:@"playerRadius"];
+    // LS player radius
+    [preferences registerObject:&prefLSRadius default:@"13" forKey:@"LSRadius"];
 
-    // Media player coloring
-    [preferences registerBool:&prefUsePlayerCustomColor default:NO forKey:@"usePlayerCustomColor"];
-    [preferences registerObject:&prefPlayerCustomColor default:@"000000" forKey:@"playerCustomColor"];
+    // LS player coloring
+    [preferences registerBool:&prefUseLSCustomColor default:NO forKey:@"useLSCustomColor"];
+    [preferences registerObject:&prefLSCustomColor default:@"000000" forKey:@"LSCustomColor"];
 
     // Controls color
-    [preferences registerBool:&prefUseTintCustomColor default:NO forKey:@"useTintCustomColor"];
-    [preferences registerObject:&prefTintCustomColor default:@"000000" forKey:@"tintCustomColor"];
+    [preferences registerBool:&prefUseLSTintCustomColor default:NO forKey:@"useLSTintCustomColor"];
+    [preferences registerObject:&prefLSTintCustomColor default:@"000000" forKey:@"LSTintCustomColor"];
+
+    // LS Hiding
+    [preferences registerBool:&prefLSHideVolume default:NO forKey:@"LSHideVolume"];
 
     // Media player alpha
-    [preferences registerObject:&prefPlayerAlpha default:@"1.0" forKey:@"playerAlpha"];
+    [preferences registerObject:&prefLSAlpha default:@"1.0" forKey:@"LSAlpha"];
 
     // Song artwork
-    [preferences registerObject:&prefArtworkRadius default:@"0" forKey:@"artworkRadius"];
-    [preferences registerBool:&prefHideSourceIcon default:NO forKey:@"hideSourceIcon"];
+    [preferences registerObject:&prefLSArtworkRadius default:@"0" forKey:@"LSArtworkRadius"];
+    [preferences registerBool:&prefLSHideSourceIcon default:NO forKey:@"LSHideSourceIcon"];
+
+    // CC tint
+    [preferences registerBool:&prefUseCCTintCustomColor default:NO forKey:@"useCCTintCustomColor"];
+    [preferences registerObject:&prefCCTintCustomColor default:@"000000" forKey:@"CCTintCustomColor"];
+
+    // CC Song artwork
+    [preferences registerObject:&prefCCArtworkRadius default:@"0" forKey:@"CCArtworkRadius"];
+    [preferences registerBool:&prefCCHideSourceIcon default:NO forKey:@"CCHideSourceIcon"];
 
     %init;
 }

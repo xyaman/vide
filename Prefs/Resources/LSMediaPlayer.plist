@@ -4,6 +4,8 @@
 <dict>
     <key>items</key>
     <array>
+
+        <!-- Background color -->
         <dict>
             <key>cell</key>
             <string>PSGroupCell</string>
@@ -18,7 +20,7 @@
             <key>default</key>
             <false/>
             <key>key</key>
-            <string>usePlayerCustomColor</string>
+            <string>useLSCustomColor</string>
             <key>defaults</key>
             <string>com.xyaman.videpreferences</string> 
         </dict>
@@ -32,11 +34,12 @@
             <key>fallback</key>
             <string>000000</string>
             <key>key</key>
-            <string>playerCustomColor</string>
+            <string>LSCustomColor</string>
             <key>defaults</key>
             <string>com.xyaman.videpreferences</string>
         </dict>
 
+        <!-- Tint color -->
         <dict>
             <key>cell</key>
             <string>PSGroupCell</string>
@@ -51,7 +54,7 @@
             <key>default</key>
             <false/>
             <key>key</key>
-            <string>useTintCustomColor</string>
+            <string>useLSTintCustomColor</string>
             <key>defaults</key>
             <string>com.xyaman.videpreferences</string> 
         </dict>
@@ -65,7 +68,7 @@
             <key>fallback</key>
             <string>000000</string>
             <key>key</key>
-            <string>tintCustomColor</string>
+            <string>LSTintCustomColor</string>
             <key>defaults</key>
             <string>com.xyaman.videpreferences</string>
         </dict>
@@ -89,10 +92,30 @@
             <key>showValue</key>
             <true/>
             <key>key</key>
-            <string>playerAlpha</string>
+            <string>LSAlpha</string>
             <key>defaults</key>
             <string>com.xyaman.videpreferences</string>
         </dict>
+
+        <!-- Hide volume -->
+       <dict>
+            <key>cell</key>
+            <string>PSGroupCell</string>
+            <key>label</key>
+            <string>Hiding</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSSwitchCell</string>
+            <key>default</key>
+            <false/>
+            <key>label</key>
+            <string>Hide volume slider</string>
+            <key>key</key>
+            <string>LSHideVolume</string>
+            <key>defaults</key>
+            <string>com.xyaman.videpreferences</string> 
+        </dict> 
 
         <!-- Player Radius -->
         <dict>
@@ -113,7 +136,7 @@
             <key>showValue</key>
             <true/>
             <key>key</key>
-            <string>playerRadius</string>
+            <string>LSRadius</string>
             <key>defaults</key>
             <string>com.xyaman.videpreferences</string>
         </dict>
@@ -130,11 +153,11 @@
             <key>cell</key>
             <string>PSSwitchCell</string>
             <key>label</key>
-            <string>Hide audio source icon</string>
+            <string>Hide now playing app icon</string>
             <key>default</key>
             <false/>
             <key>key</key>
-            <string>hideSourceIcon</string>
+            <string>LSHideSourceIcon</string>
             <key>defaults</key>
             <string>com.xyaman.videpreferences</string> 
         </dict>
@@ -142,7 +165,7 @@
             <key>cell</key>
             <string>PSStaticTextCell</string>
             <key>label</key>
-            <string>Artwork Radius</string>
+            <string>Radius</string>
         </dict>
         <dict>
             <key>cell</key>
@@ -156,7 +179,7 @@
             <key>showValue</key>
             <true/>
             <key>key</key>
-            <string>artworkRadius</string>
+            <string>LSArtworkRadius</string>
             <key>defaults</key>
             <string>com.xyaman.videpreferences</string>
         </dict>
