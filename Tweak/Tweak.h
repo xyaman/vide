@@ -18,12 +18,24 @@ BOOL prefUseLSTintCustomColor = NO;
 NSString *prefLSTintCustomColor = nil;
 
 // LS Hiding
+BOOL prefLSHideTime = NO;
+BOOL prefLSHideControls = NO;
 BOOL prefLSHideVolume = NO;
+
+// LS gestures
+BOOL prefLSUseSwipeGestures = NO;
 
 // CC
 BOOL prefUseCCTintCustomColor = NO;
 NSString *prefCCTintCustomColor = nil;
 
+// CC Hiding
+BOOL prefCCHideTime = NO;
+BOOL prefCCHideControls = NO;
+BOOL prefCCHideVolume = NO;
+
+// CC gestures
+BOOL prefCCUseSwipeGestures = NO;
 
 NSString *prefCCArtworkRadius = nil;
 BOOL prefCCHideSourceIcon = NO;
@@ -34,8 +46,23 @@ BOOL prefCCHideSourceIcon = NO;
 // @interface MRPlatterViewController : UIViewController
 // @end
 
+// Use to get a instance and use gestures
+@interface CSScrollView : UIScrollView
+@end
+
 @interface UIView (Private)
 -(UIViewController *)_viewControllerForAncestor;
+@end
+
+@interface SBMediaController : NSObject
++ (id)sharedInstance;
+- (BOOL) isPlaying;
+- (BOOL)changeTrack:(int)arg1 eventSource:(long long)arg2;
+@end
+
+@interface MRUNowPlayingViewController : UIViewController
+@property(assign,nonatomic) long long context;
+- (void) addSwipeGestures;
 @end
 
 @interface CSAdjunctItemView : UIView
@@ -51,9 +78,7 @@ BOOL prefCCHideSourceIcon = NO;
 @property(nonatomic,retain) MTMaterialView *backgroundView;
 @end
 
-@interface MRUNowPlayingViewController : UIViewController
-@property(assign,nonatomic) long long context;
-@end
+
 
 // Media button
 @interface MRUTransportButton : UIButton

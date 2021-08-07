@@ -4,6 +4,66 @@
 <dict>
     <key>items</key>
     <array>
+        <dict>
+            <key>cell</key>
+            <string>PSGroupCell</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSSwitchCell</string>
+            <key>default</key>
+            <false/>
+            <key>label</key>
+            <string>Use swipe gestures</string>
+            <key>key</key>
+            <string>LSUseSwipeGestures</string>
+            <key>defaults</key>
+            <string>com.xyaman.videpreferences</string> 
+        </dict> 
+
+        <!-- Hide options -->
+        <dict>
+            <key>cell</key>
+            <string>PSGroupCell</string>
+            <key>label</key>
+            <string>Hiding</string>
+        </dict>
+        <dict>
+            <key>cell</key>
+            <string>PSSwitchCell</string>
+            <key>default</key>
+            <false/>
+            <key>label</key>
+            <string>Hide time slider</string>
+            <key>key</key>
+            <string>LSHideTime</string>
+            <key>defaults</key>
+            <string>com.xyaman.videpreferences</string> 
+        </dict> 
+        <dict>
+            <key>cell</key>
+            <string>PSSwitchCell</string>
+            <key>default</key>
+            <false/>
+            <key>label</key>
+            <string>Hide controls</string>
+            <key>key</key>
+            <string>LSHideControls</string>
+            <key>defaults</key>
+            <string>com.xyaman.videpreferences</string> 
+        </dict> 
+        <dict>
+            <key>cell</key>
+            <string>PSSwitchCell</string>
+            <key>default</key>
+            <false/>
+            <key>label</key>
+            <string>Hide volume slider</string>
+            <key>key</key>
+            <string>LSHideVolume</string>
+            <key>defaults</key>
+            <string>com.xyaman.videpreferences</string> 
+        </dict> 
 
         <!-- Background color -->
         <dict>
@@ -97,25 +157,7 @@
             <string>com.xyaman.videpreferences</string>
         </dict>
 
-        <!-- Hide volume -->
-       <dict>
-            <key>cell</key>
-            <string>PSGroupCell</string>
-            <key>label</key>
-            <string>Hiding</string>
-        </dict>
-        <dict>
-            <key>cell</key>
-            <string>PSSwitchCell</string>
-            <key>default</key>
-            <false/>
-            <key>label</key>
-            <string>Hide volume slider</string>
-            <key>key</key>
-            <string>LSHideVolume</string>
-            <key>defaults</key>
-            <string>com.xyaman.videpreferences</string> 
-        </dict> 
+       
 
         <!-- Player Radius -->
         <dict>
