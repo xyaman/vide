@@ -82,8 +82,85 @@
                 <string>com.xyaman.videpreferences</string>
             </dict>
 
+            <!-- Waves -->
+            <dict>
+                <key>cell</key>
+                <string>PSGroupCell</string>
+                <key>label</key>
+                <string>Wave visualizer</string>
+                <key>footerText</key>
+                <string>Automatic changes color based on song artwork</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSSwitchCell</string>
+                <key>default</key>
+                <false/>
+                <key>label</key>
+                <string>Enabled</string>
+                <key>key</key>
+                <string>LSShowWave</string>
+                <key>defaults</key>
+                <string>com.xyaman.videpreferences</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSSegmentCell</string>
+                <key>validValues</key>
+                <array>
+                    <integer>1</integer>
+                    <integer>2</integer>
+                </array>
+                <key>validTitles</key>
+                <array>
+                    <string>Automatic</string>
+                    <string>Custom</string>
+                </array>
+                <key>default</key>
+                <integer>1</integer>
+                <key>key</key>
+                <string>LSWaveColorStyle</string>
+                <key>defaults</key>
+                <string>com.xyaman.videpreferences</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSLinkCell</string>
+                <key>cellClass</key>
+                <string>GcColorPickerCell</string>
+                <key>label</key>
+                <string>Custom color</string>
+                <key>fallback</key>
+                <string>000000</string>
+                <key>key</key>
+                <string>LSWaveCustomColor</string>
+                <key>defaults</key>
+                <string>com.xyaman.videpreferences</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSSegmentCell</string>
+                <key>validValues</key>
+                <array>
+                    <integer>2</integer>
+                    <integer>4</integer>
+                    <integer>8</integer>
+                </array>
+                <key>validTitles</key>
+                <array>
+                    <string>Low</string>
+                    <string>Mid</string>
+                    <string>High</string>
+                </array>
+                <key>default</key>
+                <integer>1</integer>
+                <key>key</key>
+                <string>LSWaveSens</string>
+                <key>defaults</key>
+                <string>com.xyaman.videpreferences</string>
+            </dict>
+
             <!-- Background color -->
-            <!-- Background -->
             <dict>
                 <key>cell</key>
                 <string>PSGroupCell</string>
@@ -264,6 +341,24 @@
                 <true/>
                 <key>key</key>
                 <string>LSArtworkRadius</string>
+                <key>defaults</key>
+                <string>com.xyaman.videpreferences</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSGroupCell</string>
+                <key>label</key>
+                <string>Other</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSSwitchCell</string>
+                <key>label</key>
+                <string>Use airplay iOS 13 style</string>
+                <key>default</key>
+                <false/>
+                <key>key</key>
+                <string>LSAirplayBlur</string>
                 <key>defaults</key>
                 <string>com.xyaman.videpreferences</string>
             </dict>

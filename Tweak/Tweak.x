@@ -66,7 +66,7 @@ UIColor *tintColor = nil;
 
 // LS media player main view
 %hook CSAdjunctItemView
-%property(nonatomic, retain) NSLayoutDimension *height;
+%property (nonatomic, retain) SNAWaveView *sona;
 - (void) didMoveToWindow {
     %orig;
 
@@ -77,25 +77,72 @@ UIColor *tintColor = nil;
 
     // Radius
     pv.backgroundView.layer.cornerRadius = [prefLSRadius floatValue];
+    pv.backgroundView.clipsToBounds = YES;
 
     // Background color
     if([prefLSBackgroundStyle intValue] == 1) {
         pv.backgroundView.backgroundColor = backgroundColor;
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateColor:) name:videUpdateColors object:nil]; 
     
     } else if([prefLSBackgroundStyle intValue] == 2) {
         pv.backgroundView.backgroundColor = [GcColorPickerUtils colorWithHex:prefLSCustomColor];
     }
+
+    // Waves
+    if(prefLSShowWave && !self.sona) {
+        self.sona = [[SNAWaveView alloc] initWithFrame:pv.frame];
+        self.sona.coloringStyle = SNAColoringStyleSolid;
+        self.sona.yOffset = 20;
+        self.sona.alpha = 0.5f;
+        self.sona.pointSensitivity = [prefLSWaveSens floatValue];
+        self.sona.pointNumber = 16;
+
+        if([prefLSWaveColorStyle intValue] == 1) {
+            self.sona.pointColor = [Kuro isDarkColor:backgroundColor] ? [Kuro lighterColorForColor:backgroundColor] : [Kuro darkerColorForColor:backgroundColor];;
+            [self.sona updateColors];
+        
+        } else if([prefLSWaveColorStyle intValue] == 2) {
+            self.sona.pointColor = [GcColorPickerUtils colorWithHex:prefLSWaveCustomColor];
+            [self.sona updateColors]; 
+        }
+
+        [pv.backgroundView insertSubview:self.sona atIndex:0];
+
+        if([[%c(SBMediaController) sharedInstance] isPlaying]) [self.sona start];
+    }
+
+    if(prefLSShowWave || [prefLSBackgroundStyle intValue] == 1) 
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateColor:) name:videUpdateColors object:nil]; 
 }
 
 %new
 - (void) updateColor:(NSNotification *) notification {
     PLPlatterView *pv = [self valueForKey:@"_platterView"];
     pv.backgroundView.backgroundColor = backgroundColor;
+
+    if(self.sona) {
+
+        if([[%c(SBMediaController) sharedInstance] isPlaying]) {
+            [self.sona start];
+        
+        } else {
+            [self.sona stop];
+        }
+
+        if([prefLSWaveColorStyle intValue] == 1) {
+            self.sona.pointColor = [Kuro isDarkColor:backgroundColor] ? [Kuro lighterColorForColor:backgroundColor] : [Kuro darkerColorForColor:backgroundColor];
+            [self.sona updateColors];
+        }
+    }
 }
 
 - (CGSize)intrinsicContentSize {
+    self.sona.frame = CGRectMake(0, 0, self.frame.size.width, adjunctHeight);
     return CGSizeMake(self.frame.size.width, adjunctHeight);
+}
+
+- (void) removeFromSuperview {
+    %orig;
+    [self.sona stop];
 }
 %end
 
@@ -105,12 +152,17 @@ UIColor *tintColor = nil;
    context == 1 (and 0?) CC Media player
  -----------------------*/
 %hook MRUNowPlayingView
+// %property (nonatomic, retain) SNAWaveView *sona;
 - (void) didMoveToWindow {
     %orig;
 
     // LS (not background, radius, alpha, for this check CSAdjunctItemView)
     if(self.context == 2) {
        if(prefLSUseSwipeGestures) [self addSwipeGestures];
+
+       if(prefLSShowWave) {
+
+       }
     
     // CC (eveything)
     } else if(self.context != 2) {
@@ -296,6 +348,55 @@ UIColor *tintColor = nil;
     if(self.subtitleLabel.layer.filters.count) self.subtitleLabel.layer.filters = nil;
     self.subtitleLabel.textColor = tint;
 }
+%end
+
+// Media player airplay
+%hook MRUNowPlayingRoutingButton
+
+- (void) didMoveToWindow {
+    %orig;
+
+    MRUNowPlayingViewController *controller = (MRUNowPlayingViewController *)[self _viewControllerForAncestor];
+    if(![controller respondsToSelector:@selector(context)]) return;
+    long long context = controller.context;
+
+    if(context == 2) {
+
+        // if([prefLSTintStyle intValue] == 1) {
+
+        //     if(self.imageView.layer.filters.count) self.imageView.layer.filters = nil;
+        //     self.imageView.tintColor = tintColor;
+            
+        //     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTint:) name:videUpdateColors object:nil];
+        
+        // } else if([prefLSTintStyle intValue] == 2) {
+        //     // UIColor *tint = [GcColorPickerUtils colorWithHex:prefLSTintCustomColor];
+        //     // [self colorLabels:tint];
+        // }
+
+        if(prefLSAirplayBlur) {
+            self.backgroundColor = [UIColor clearColor];
+            self.layer.cornerRadius = self.frame.size.width / 2;
+            self.clipsToBounds = YES;
+
+            UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+            UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+            blurEffectView.userInteractionEnabled = NO;
+        
+            blurEffectView.frame = self.bounds;
+            blurEffectView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+
+            [self insertSubview:blurEffectView atIndex:0];
+        }
+    }
+}
+
+// %new
+// - (void) updateTint:(NSNotification *) notication {
+//     if(self.imageView.layer.filters.count) self.imageView.layer.filters = nil;
+//     self.imageView.tintColor = tintColor; 
+// }
+
 %end
 
 // Media player time slider
@@ -496,12 +597,19 @@ UIColor *tintColor = nil;
 
     // LS player radius
     [preferences registerObject:&prefLSRadius default:@"13" forKey:@"LSRadius"];
+    [preferences registerBool:&prefLSAirplayBlur default:NO forKey:@"LSAirplayBlur"];
 
     // LS player coloring
     [preferences registerObject:&prefLSBackgroundStyle default:0 forKey:@"LSBackgroundStyle"];
     [preferences registerObject:&prefLSCustomColor default:@"000000" forKey:@"LSCustomColor"];
     [preferences registerObject:&prefLSTintStyle default:0 forKey:@"LSTintStyle"];
     [preferences registerObject:&prefLSTintCustomColor default:@"000000" forKey:@"LSTintCustomColor"];
+
+    // LS Wave
+    [preferences registerBool:&prefLSShowWave default:NO forKey:@"LSShowWave"];
+    [preferences registerObject:&prefLSWaveColorStyle default:@(1) forKey:@"LSWaveColorStyle"];
+    [preferences registerObject:&prefLSWaveCustomColor default:@"000000" forKey:@"LSWaveCustomColor"];
+    [preferences registerObject:&prefLSWaveSens default:@(4) forKey:@"LSWaveSens"];
 
     // LS Hiding
     [preferences registerBool:&prefLSHideTime default:NO forKey:@"LSHideTime"];

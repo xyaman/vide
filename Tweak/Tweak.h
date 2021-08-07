@@ -4,12 +4,14 @@
 
 #import <GcUniversal/GcColorPickerUtils.h>
 #import <Kuro/libKuro.h>
+#import <Sona/SNAWaveView.h>
 
 // Preferences
 HBPreferences *preferences = nil;
 
 NSString *prefLSAlpha = nil;
 NSString *prefLSRadius = nil;
+BOOL prefLSAirplayBlur = NO;
 
 // LS Coloring
 NSNumber *prefLSBackgroundStyle = nil;
@@ -19,6 +21,12 @@ NSString *prefLSTintCustomColor = nil;
 
 NSString *prefLSArtworkRadius = nil;
 BOOL prefLSHideSourceIcon = NO;
+
+// LS Wave
+BOOL prefLSShowWave = NO;
+NSNumber *prefLSWaveColorStyle = nil;
+NSString *prefLSWaveCustomColor = nil;
+NSNumber *prefLSWaveSens = nil;
 
 // LS Hiding
 BOOL prefLSHideTime = NO;
@@ -83,7 +91,7 @@ NSString *videUpdateColors = @"videUpdateColors";
 @end
 
 @interface CSAdjunctItemView : UIView
-@property(nonatomic, retain) NSLayoutDimension *height;
+@property(nonatomic, retain) SNAWaveView *sona;
 - (void) setSizeToMimic:(CGSize)arg1;
 - (void) _updateSizeToMimic;
 @end
@@ -94,8 +102,6 @@ NSString *videUpdateColors = @"videUpdateColors";
 @interface PLPlatterView : UIView
 @property(nonatomic,retain) MTMaterialView *backgroundView;
 @end
-
-
 
 // Media button
 @interface MRUTransportButton : UIButton
@@ -132,6 +138,9 @@ NSString *videUpdateColors = @"videUpdateColors";
 
 - (void) colorLabels:(UIColor *)tint;
 - (void) updateVisualStyling;
+@end
+
+@interface MRUNowPlayingRoutingButton : UIButton
 @end
 
 @interface MRUNowPlayingControlsView : UIView
