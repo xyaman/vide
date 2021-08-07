@@ -1,147 +1,221 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-    <key>items</key>
-    <array>
-        <dict>
-            <key>cell</key>
-            <string>PSGroupCell</string>
-        </dict>
-        <dict>
-            <key>cell</key>
-            <string>PSSwitchCell</string>
-            <key>default</key>
-            <false/>
-            <key>label</key>
-            <string>Use swipe gestures</string>
-            <key>key</key>
-            <string>CCUseSwipeGestures</string>
-            <key>defaults</key>
-            <string>com.xyaman.videpreferences</string> 
-        </dict>  
+    <dict>
+        <key>items</key>
+        <array>
+            <dict>
+                <key>cell</key>
+                <string>PSGroupCell</string>
+                <key>label</key>
+                <string>Touch gestures</string>
+                <key>footerText</key>
+                <string>Swipe left to go backwards. Swipe right to go forward.</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSSwitchCell</string>
+                <key>default</key>
+                <false/>
+                <key>label</key>
+                <string>Use swipe gestures</string>
+                <key>key</key>
+                <string>CCUseSwipeGestures</string>
+                <key>defaults</key>
+                <string>com.xyaman.videpreferences</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSSwitchCell</string>
+                <key>default</key>
+                <true/>
+                <key>label</key>
+                <string>Use taptic feedback</string>
+                <key>key</key>
+                <string>CCUseTapticFeedback</string>
+                <key>defaults</key>
+                <string>com.xyaman.videpreferences</string>
+            </dict>
 
-        <!-- Hide options -->
-        <dict>
-            <key>cell</key>
-            <string>PSGroupCell</string>
-            <key>label</key>
-            <string>Hiding</string>
-        </dict>
-        <dict>
-            <key>cell</key>
-            <string>PSSwitchCell</string>
-            <key>default</key>
-            <false/>
-            <key>label</key>
-            <string>Hide time slider</string>
-            <key>key</key>
-            <string>CCHideTime</string>
-            <key>defaults</key>
-            <string>com.xyaman.videpreferences</string> 
-        </dict> 
-        <dict>
-            <key>cell</key>
-            <string>PSSwitchCell</string>
-            <key>default</key>
-            <false/>
-            <key>label</key>
-            <string>Hide controls</string>
-            <key>key</key>
-            <string>CCHideControls</string>
-            <key>defaults</key>
-            <string>com.xyaman.videpreferences</string> 
-        </dict> 
-        <dict>
-            <key>cell</key>
-            <string>PSSwitchCell</string>
-            <key>default</key>
-            <false/>
-            <key>label</key>
-            <string>Hide volume slider</string>
-            <key>key</key>
-            <string>CCHideVolume</string>
-            <key>defaults</key>
-            <string>com.xyaman.videpreferences</string> 
-        </dict> 
+            <!-- Hide options -->
+            <dict>
+                <key>cell</key>
+                <string>PSGroupCell</string>
+                <key>label</key>
+                <string>Hiding</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSSwitchCell</string>
+                <key>default</key>
+                <false/>
+                <key>label</key>
+                <string>Hide time slider</string>
+                <key>key</key>
+                <string>CCHideTime</string>
+                <key>defaults</key>
+                <string>com.xyaman.videpreferences</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSSwitchCell</string>
+                <key>default</key>
+                <false/>
+                <key>label</key>
+                <string>Hide controls</string>
+                <key>key</key>
+                <string>CCHideControls</string>
+                <key>defaults</key>
+                <string>com.xyaman.videpreferences</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSSwitchCell</string>
+                <key>default</key>
+                <false/>
+                <key>label</key>
+                <string>Hide volume slider</string>
+                <key>key</key>
+                <string>CCHideVolume</string>
+                <key>defaults</key>
+                <string>com.xyaman.videpreferences</string>
+            </dict>
 
-        <!-- Custom tint -->
-        <dict>
-            <key>cell</key>
-            <string>PSGroupCell</string>
-            <key>label</key>
-            <string>Custom tint color</string>
-        </dict>
-        <dict>
-            <key>cell</key>
-            <string>PSSwitchCell</string>
-            <key>label</key>
-            <string>Enabled</string>
-            <key>default</key>
-            <false/>
-            <key>key</key>
-            <string>useCCTintCustomColor</string>
-            <key>defaults</key>
-            <string>com.xyaman.videpreferences</string> 
-        </dict>
-        <dict>
-            <key>cell</key>
-            <string>PSLinkCell</string>
-            <key>cellClass</key>
-            <string>GcColorPickerCell</string>
-            <key>label</key>
-            <string>Custom color</string>
-            <key>fallback</key>
-            <string>000000</string>
-            <key>key</key>
-            <string>CCTintCustomColor</string>
-            <key>defaults</key>
-            <string>com.xyaman.videpreferences</string>
-        </dict>
+            <!-- Background -->
+            <dict>
+                <key>cell</key>
+                <string>PSGroupCell</string>
+                <key>label</key>
+                <string>Background</string>
+                <key>footerText</key>
+                <string>Automatic changes color based on song artwork</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSSegmentCell</string>
+                <key>validValues</key>
+                <array>
+                    <integer>0</integer>
+                    <integer>1</integer>
+                    <integer>2</integer>
+                </array>
+                <key>validTitles</key>
+                <array>
+                    <string>Default</string>
+                    <string>Automatic</string>
+                    <string>Custom</string>
+                </array>
+                <key>default</key>
+                <integer>0</integer>
+                <key>key</key>
+                <string>CCBackgroundStyle</string>
+                <key>defaults</key>
+                <string>com.xyaman.videpreferences</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSLinkCell</string>
+                <key>cellClass</key>
+                <string>GcColorPickerCell</string>
+                <key>label</key>
+                <string>Custom color</string>
+                <key>fallback</key>
+                <string>000000</string>
+                <key>key</key>
+                <string>CCCustomColor</string>
+                <key>defaults</key>
+                <string>com.xyaman.videpreferences</string>
+            </dict>
 
-        <!-- Artwork -->
-        <dict>
-            <key>cell</key>
-            <string>PSGroupCell</string>
-            <key>label</key>
-            <string>Artwork</string>
-        </dict>
-        <dict>
-            <key>cell</key>
-            <string>PSSwitchCell</string>
-            <key>label</key>
-            <string>Hide now playing app icon</string>
-            <key>default</key>
-            <false/>
-            <key>key</key>
-            <string>CCHideSourceIcon</string>
-            <key>defaults</key>
-            <string>com.xyaman.videpreferences</string> 
-        </dict>
-        <dict>
-            <key>cell</key>
-            <string>PSStaticTextCell</string>
-            <key>label</key>
-            <string>Radius</string>
-        </dict>
-        <dict>
-            <key>cell</key>
-            <string>PSSliderCell</string>
-            <key>default</key>
-            <real>0</real>
-            <key>min</key>
-            <real>0</real>
-            <key>max</key>
-            <real>130</real>
-            <key>showValue</key>
-            <true/>
-            <key>key</key>
-            <string>CCArtworkRadius</string>
-            <key>defaults</key>
-            <string>com.xyaman.videpreferences</string>
-        </dict>
-    </array>
-    <key>title</key>
-    <string>CC Media Player</string>
-</dict>
+            <!-- Custom tint -->
+            <dict>
+                <key>cell</key>
+                <string>PSGroupCell</string>
+                <key>label</key>
+                <string>Custom tint color</string>
+                <key>footerText</key>
+                <string>Automatic changes tint based on song artwork</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSSegmentCell</string>
+                <key>validValues</key>
+                <array>
+                    <integer>0</integer>
+                    <integer>1</integer>
+                    <integer>2</integer>
+                </array>
+                <key>validTitles</key>
+                <array>
+                    <string>Default</string>
+                    <string>Automatic</string>
+                    <string>Custom</string>
+                </array>
+                <key>default</key>
+                <integer>0</integer>
+                <key>key</key>
+                <string>CCTintStyle</string>
+                <key>defaults</key>
+                <string>com.xyaman.videpreferences</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSLinkCell</string>
+                <key>cellClass</key>
+                <string>GcColorPickerCell</string>
+                <key>label</key>
+                <string>Custom color</string>
+                <key>fallback</key>
+                <string>000000</string>
+                <key>key</key>
+                <string>CCTintCustomColor</string>
+                <key>defaults</key>
+                <string>com.xyaman.videpreferences</string>
+            </dict>
+
+            <!-- Artwork -->
+            <dict>
+                <key>cell</key>
+                <string>PSGroupCell</string>
+                <key>label</key>
+                <string>Artwork</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSSwitchCell</string>
+                <key>label</key>
+                <string>Hide now playing app icon</string>
+                <key>default</key>
+                <false/>
+                <key>key</key>
+                <string>CCHideSourceIcon</string>
+                <key>defaults</key>
+                <string>com.xyaman.videpreferences</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSStaticTextCell</string>
+                <key>label</key>
+                <string>Radius</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSSliderCell</string>
+                <key>default</key>
+                <real>0</real>
+                <key>min</key>
+                <real>0</real>
+                <key>max</key>
+                <real>130</real>
+                <key>showValue</key>
+                <true/>
+                <key>key</key>
+                <string>CCArtworkRadius</string>
+                <key>defaults</key>
+                <string>com.xyaman.videpreferences</string>
+            </dict>
+        </array>
+        <key>title</key>
+        <string>CC Media Player</string>
+    </dict>
 </plist>

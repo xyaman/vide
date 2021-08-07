@@ -1,21 +1,24 @@
 #import <UIKit/UIkit.h>
 #import <Cephei/HBPreferences.h>
+#import <MediaRemote/MediaRemote.h>
 
 #import <GcUniversal/GcColorPickerUtils.h>
+#import <Kuro/libKuro.h>
 
 // Preferences
 HBPreferences *preferences = nil;
 
-BOOL prefUseLSCustomColor = NO;
-NSString *prefLSCustomColor = nil;
 NSString *prefLSAlpha = nil;
 NSString *prefLSRadius = nil;
 
+// LS Coloring
+NSNumber *prefLSBackgroundStyle = nil;
+NSString *prefLSCustomColor = nil;
+NSNumber *prefLSTintStyle = nil;
+NSString *prefLSTintCustomColor = nil;
+
 NSString *prefLSArtworkRadius = nil;
 BOOL prefLSHideSourceIcon = NO;
-
-BOOL prefUseLSTintCustomColor = NO;
-NSString *prefLSTintCustomColor = nil;
 
 // LS Hiding
 BOOL prefLSHideTime = NO;
@@ -24,9 +27,12 @@ BOOL prefLSHideVolume = NO;
 
 // LS gestures
 BOOL prefLSUseSwipeGestures = NO;
+BOOL prefLSUseTapticFeedback = YES;
 
-// CC
-BOOL prefUseCCTintCustomColor = NO;
+// CC Coloring
+NSString *prefCCBackgroundStyle = nil;
+NSString *prefCCCustomColor = nil;
+NSNumber *prefCCTintStyle = nil;
 NSString *prefCCTintCustomColor = nil;
 
 // CC Hiding
@@ -36,9 +42,15 @@ BOOL prefCCHideVolume = NO;
 
 // CC gestures
 BOOL prefCCUseSwipeGestures = NO;
+BOOL prefCCUseTapticFeedback = YES;
 
 NSString *prefCCArtworkRadius = nil;
 BOOL prefCCHideSourceIcon = NO;
+
+/*----------------------
+ / Notifications
+ -----------------------*/
+NSString *videUpdateColors = @"videUpdateColors";
 
 
 // @interface CSMediaControlsViewController : UIViewController
@@ -61,6 +73,11 @@ BOOL prefCCHideSourceIcon = NO;
 @end
 
 @interface MRUNowPlayingViewController : UIViewController
+@property(assign,nonatomic) long long context;
+- (void) addSwipeGestures;
+@end
+
+@interface MRUNowPlayingView : UIView
 @property(assign,nonatomic) long long context;
 - (void) addSwipeGestures;
 @end

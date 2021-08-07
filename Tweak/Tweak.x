@@ -4,15 +4,46 @@ CSScrollView *lsScrollView = nil;
 
 float adjunctHeight = 0;
 
+// Temporary fix
+UIColor *backgroundColor = nil;
+UIColor *tintColor = nil;
+
+// Only used when artwork color is enabled
+%group ArtworkColorNotification
+%hook SBMediaController
+// This method is for sending the new song artwork
+-(void)setNowPlayingInfo:(NSDictionary *)arg1 {
+    %orig;
+
+    // arg1 returns a dict that doesn't work for us :(
+
+    MRMediaRemoteGetNowPlayingInfo(dispatch_get_main_queue(), ^(CFDictionaryRef information) {
+        NSDictionary *info = (__bridge NSDictionary *)(information);
+
+        NSData *artworkData = [info objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtworkData];
+        if(artworkData) {
+            UIImage *artwork = [UIImage imageWithData:artworkData]; // TODO: Check if artwork can be null
+            backgroundColor = [Kuro getPrimaryColor:artwork];
+
+            UIColor *tint = [Kuro isDarkImage:artwork] ? [UIColor whiteColor] : [UIColor blackColor];
+            tintColor = tint;
+        }
+
+        [[NSNotificationCenter defaultCenter] postNotificationName:videUpdateColors object:nil userInfo:nil];
+    });
+}
+%end
+%end
+
 // Here we save an instance of CSScrollView
 // we need it to use swipe gestures, instead of this view pan gestures
 %hook CSScrollView
 -(instancetype)initWithFrame:(CGRect)frame {
     id orig = %orig;
 
-   lsScrollView = self;
+    lsScrollView = self;
 
-   return orig;
+    return orig;
 }
 %end
 
@@ -48,72 +79,72 @@ float adjunctHeight = 0;
     pv.backgroundView.layer.cornerRadius = [prefLSRadius floatValue];
 
     // Background color
-    if(prefUseLSCustomColor) pv.backgroundView.backgroundColor = [GcColorPickerUtils colorWithHex:prefLSCustomColor];
-
-    // Add gestures
-    if(prefLSUseSwipeGestures) {
-        UISwipeGestureRecognizer *leftSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(prevTrack)];
-        leftSwipe.direction = UISwipeGestureRecognizerDirectionLeft;
-        [self addGestureRecognizer:leftSwipe];
-        
-        [lsScrollView.panGestureRecognizer requireGestureRecognizerToFail:leftSwipe];
-
-        UISwipeGestureRecognizer *rightSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(nextTrack)];
-        rightSwipe.direction = UISwipeGestureRecognizerDirectionRight;
-        [self addGestureRecognizer:rightSwipe];
-        
-        [lsScrollView.panGestureRecognizer requireGestureRecognizerToFail:rightSwipe];
+    if([prefLSBackgroundStyle intValue] == 1) {
+        pv.backgroundView.backgroundColor = backgroundColor;
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateColor:) name:videUpdateColors object:nil]; 
+    
+    } else if([prefLSBackgroundStyle intValue] == 2) {
+        pv.backgroundView.backgroundColor = [GcColorPickerUtils colorWithHex:prefLSCustomColor];
     }
+}
+
+%new
+- (void) updateColor:(NSNotification *) notification {
+    PLPlatterView *pv = [self valueForKey:@"_platterView"];
+    pv.backgroundView.backgroundColor = backgroundColor;
 }
 
 - (CGSize)intrinsicContentSize {
     return CGSizeMake(self.frame.size.width, adjunctHeight);
 }
-
-%new
-- (void) prevTrack {
-    [[%c(SBMediaController) sharedInstance] changeTrack:-1 eventSource:0];
-}
-
-%new
-- (void) nextTrack {
-    [[%c(SBMediaController) sharedInstance] changeTrack:1 eventSource:0];
-}
-
 %end
 
 /*----------------------
    MRU
-   context == 2 LS Media player
-   context == 1 CC Media player
+   context == 2 LS Media player (Content but no for notification -> CSAdjunctItemView)
+   context == 1 (and 0?) CC Media player
  -----------------------*/
-%hook MRUNowPlayingViewController
-- (void) loadView {
+%hook MRUNowPlayingView
+- (void) didMoveToWindow {
     %orig;
 
-    // Only works for CC (I guess)
-    // if(self.context == 2) {
-    //    [self addSwipeGestures];
+    // LS (not background, radius, alpha, for this check CSAdjunctItemView)
+    if(self.context == 2) {
+       if(prefLSUseSwipeGestures) [self addSwipeGestures];
     
-    // }
-    if(self.context != 2) {
+    // CC (eveything)
+    } else if(self.context != 2) {
        if(prefCCUseSwipeGestures) [self addSwipeGestures]; 
+
+        if([prefCCBackgroundStyle intValue] == 1) {
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateColor:) name:videUpdateColors object:nil];
+
+        } else if([prefCCBackgroundStyle intValue] == 2) {
+            self.backgroundColor = [GcColorPickerUtils colorWithHex:prefCCCustomColor];
+        }
     }
 
 }
 
+%new 
+- (void) updateColor:(NSNotification *)notification {
+    // NSDictionary *userInfo = [notification userInfo];
+    // self.backgroundColor = [userInfo objectForKey:@"background"];
+    self.backgroundColor = backgroundColor;
+}
+
 %new
 - (void) addSwipeGestures {
-
     // Add gestures
     UISwipeGestureRecognizer *leftSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(prevTrack)];
     leftSwipe.direction = UISwipeGestureRecognizerDirectionLeft;
-    [self.view addGestureRecognizer:leftSwipe];
+    [self addGestureRecognizer:leftSwipe];
+    if(self.context == 2) [lsScrollView.panGestureRecognizer requireGestureRecognizerToFail:leftSwipe];
 
     UISwipeGestureRecognizer *rightSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(nextTrack)];
     rightSwipe.direction = UISwipeGestureRecognizerDirectionRight;
-    [self.view addGestureRecognizer:rightSwipe];
-    
+    [self addGestureRecognizer:rightSwipe];
+    if(self.context == 2) [lsScrollView.panGestureRecognizer requireGestureRecognizerToFail:rightSwipe];
 }
 
 %new
@@ -121,11 +152,46 @@ float adjunctHeight = 0;
 
 %new
 - (void) prevTrack {
+    if(self.context == 2 && prefLSUseTapticFeedback) {
+        UIImpactFeedbackGenerator *feedback = [[UIImpactFeedbackGenerator alloc] init];
+        [feedback prepare];
+        [[%c(SBMediaController) sharedInstance] changeTrack:-1 eventSource:0];
+        [feedback impactOccurred]; 
+
+        return;
+    
+    } else if(self.context != 2 && prefCCUseTapticFeedback) {
+        UIImpactFeedbackGenerator *feedback = [[UIImpactFeedbackGenerator alloc] init];
+        [feedback prepare];
+        [[%c(SBMediaController) sharedInstance] changeTrack:-1 eventSource:0];
+        [feedback impactOccurred]; 
+
+        return; 
+    }
+
     [[%c(SBMediaController) sharedInstance] changeTrack:-1 eventSource:0];
+
 }
 
 %new
 - (void) nextTrack {
+    if(self.context == 2 && prefLSUseTapticFeedback) {
+        UIImpactFeedbackGenerator *feedback = [[UIImpactFeedbackGenerator alloc] init];
+        [feedback prepare];
+        [[%c(SBMediaController) sharedInstance] changeTrack:1 eventSource:0];
+        [feedback impactOccurred]; 
+
+        return;
+    
+    } else if(self.context != 2 && prefCCUseTapticFeedback) {
+        UIImpactFeedbackGenerator *feedback = [[UIImpactFeedbackGenerator alloc] init];
+        [feedback prepare];
+        [[%c(SBMediaController) sharedInstance] changeTrack:1 eventSource:0];
+        [feedback impactOccurred]; 
+
+        return; 
+    }
+
     [[%c(SBMediaController) sharedInstance] changeTrack:1 eventSource:0];
 }
 
@@ -182,16 +248,39 @@ float adjunctHeight = 0;
     long long context = controller.context;
 
     // LS
-    if(context == 2 && prefUseLSTintCustomColor) {
-        UIColor *tint = [GcColorPickerUtils colorWithHex:prefLSTintCustomColor];
-        [self colorLabels:tint];
+    if(context == 2) {
+        if([prefLSTintStyle intValue] == 1) {
+            [self colorLabels:tintColor];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTint:) name:videUpdateColors object:nil];
+        
+        } else if([prefLSTintStyle intValue] == 2) {
+            UIColor *tint = [GcColorPickerUtils colorWithHex:prefCCTintCustomColor];
+            [self colorLabels:tint];
+        }
 
     // CC
-    } else if(context != 2 && prefUseCCTintCustomColor) {
-        UIColor *tint = [GcColorPickerUtils colorWithHex:prefCCTintCustomColor];
-        [self colorLabels:tint];
+    } else if(context != 2) {
+
+        if([prefCCTintStyle intValue] == 1) {
+            [self colorLabels:tintColor];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTint:) name:videUpdateColors object:nil];
+        
+        } else if([prefCCTintStyle intValue] == 2) {
+            UIColor *tint = [GcColorPickerUtils colorWithHex:prefCCTintCustomColor];
+            [self colorLabels:tint];
+        }
     }
 }
+
+%new
+- (void) updateTint:(NSNotification *)notification {
+
+    // NSDictionary *userInfo = [notification userInfo];
+    // [self colorLabels:[userInfo objectForKey:@"tint"]];
+
+    [self colorLabels:tintColor];
+}
+
 
 %new
 - (void) colorLabels:(UIColor *)tint {
@@ -201,9 +290,10 @@ float adjunctHeight = 0;
     self.routeLabel.textColor = tint;
     self.routeLabel.titleLabel.textColor = tint;
 
-    // if(self.titleLabel.layer.filters.count) self.titleLabel.layer.filters = nil;
+    if(self.titleLabel.layer.filters.count) self.titleLabel.layer.filters = nil;
     self.titleLabel.textColor = tint;
 
+    if(self.subtitleLabel.layer.filters.count) self.subtitleLabel.layer.filters = nil;
     self.subtitleLabel.textColor = tint;
 }
 %end
@@ -219,13 +309,35 @@ float adjunctHeight = 0;
     // LS
     if(context == 2) {
         if(prefLSHideTime) self.hidden = YES;
-        if(prefUseLSTintCustomColor) self.elapsedTrack.backgroundColor = [GcColorPickerUtils colorWithHex:prefLSTintCustomColor];
+
+        if([prefLSTintStyle intValue] == 1) {
+            self.elapsedTrack.backgroundColor = tintColor; 
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTint:) name:videUpdateColors object:nil];
+        
+        } else if([prefLSTintStyle intValue] == 2) {
+            self.elapsedTrack.backgroundColor = [GcColorPickerUtils colorWithHex:prefLSTintCustomColor];
+        }
 
     // CC
     } else if(context != 2) {
         if(prefCCHideTime) self.hidden = YES;
-        if(prefUseCCTintCustomColor) self.elapsedTrack.backgroundColor = [GcColorPickerUtils colorWithHex:prefCCTintCustomColor];
+
+        if([prefCCTintStyle intValue] == 1) {
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTint:) name:videUpdateColors object:nil];
+        
+        } else if([prefCCTintStyle intValue] == 2) {
+            self.elapsedTrack.backgroundColor = [GcColorPickerUtils colorWithHex:prefCCTintCustomColor];
+        }
     }
+}
+
+%new
+- (void) updateTint:(NSNotification *)notification {
+
+    // NSDictionary *userInfo = [notification userInfo];
+    // self.elapsedTrack.backgroundColor = [userInfo objectForKey:@"tint"];
+
+    self.elapsedTrack.backgroundColor = tintColor;
 }
 %end
 
@@ -241,7 +353,11 @@ float adjunctHeight = 0;
     if(context == 2) {
         if(prefLSHideControls) self.hidden = YES;
 
-        if(prefUseLSTintCustomColor) {
+        if([prefLSTintStyle intValue] == 1) {
+            [self changeButtonsColor:tintColor];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTint:) name:videUpdateColors object:nil];
+        
+        } else if([prefLSTintStyle intValue] == 2) {
             UIColor *tint = [GcColorPickerUtils colorWithHex:prefLSTintCustomColor];
             [self changeButtonsColor:tint];
         }
@@ -250,7 +366,10 @@ float adjunctHeight = 0;
     } else if(context != 2) {
         if(prefCCHideControls) self.hidden = YES;
 
-        if(prefUseCCTintCustomColor) {
+        if([prefCCTintStyle intValue] == 1) {
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTint:) name:videUpdateColors object:nil];
+        
+        } else if([prefCCTintStyle intValue] == 2) {
             UIColor *tint = [GcColorPickerUtils colorWithHex:prefCCTintCustomColor];
             [self changeButtonsColor:tint];
         }
@@ -271,6 +390,15 @@ float adjunctHeight = 0;
         // if(prefCCHideTime) newY -= 44;
     }
     return %orig(CGRectMake(frame.origin.x, newY, frame.size.width, frame.size.height));;
+}
+
+%new
+- (void) updateTint:(NSNotification *)notification {
+
+    // NSDictionary *userInfo = [notification userInfo];
+    // [self changeButtonsColor:[userInfo objectForKey:@"tint"]];
+
+    [self changeButtonsColor:tintColor];
 }
 
 %new
@@ -306,13 +434,35 @@ float adjunctHeight = 0;
     // LS
     if(context == 2) {
         if(prefLSHideVolume) self.hidden = YES;
-        if(prefUseLSTintCustomColor) self.slider.minimumTrackTintColor = [GcColorPickerUtils colorWithHex:prefLSTintCustomColor];
+
+        if([prefLSTintStyle intValue] == 1) {
+            self.slider.minimumTrackTintColor = tintColor;
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTint:) name:videUpdateColors object:nil];
+        
+        } else if([prefLSTintStyle intValue] == 2) {
+            self.slider.minimumTrackTintColor = [GcColorPickerUtils colorWithHex:prefLSTintCustomColor];
+        }
 
     // CC
     } else if(context != 2) {
         if(prefCCHideVolume) self.hidden = YES;
-        if(prefUseCCTintCustomColor) self.slider.minimumTrackTintColor = [GcColorPickerUtils colorWithHex:prefCCTintCustomColor];
+
+        if([prefCCTintStyle intValue] == 1) {
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTint:) name:videUpdateColors object:nil];
+        
+        } else if([prefCCTintStyle intValue] == 2) {
+            self.slider.minimumTrackTintColor = [GcColorPickerUtils colorWithHex:prefCCTintCustomColor];
+        }
     }
+}
+
+%new
+- (void) updateTint:(NSNotification *)notification {
+
+    // NSDictionary *userInfo = [notification userInfo];
+    // self.slider.minimumTrackTintColor = [userInfo objectForKey:@"tint"];
+
+    self.slider.minimumTrackTintColor = tintColor;
 }
 
 - (void) setFrame:(CGRect) frame {
@@ -342,16 +492,15 @@ float adjunctHeight = 0;
 
     // LS Swipe gestures
     [preferences registerBool:&prefLSUseSwipeGestures default:NO forKey:@"LSUseSwipeGestures"];
+    [preferences registerBool:&prefLSUseTapticFeedback default:YES forKey:@"LSUseTapticFeedback"];
 
     // LS player radius
     [preferences registerObject:&prefLSRadius default:@"13" forKey:@"LSRadius"];
 
     // LS player coloring
-    [preferences registerBool:&prefUseLSCustomColor default:NO forKey:@"useLSCustomColor"];
+    [preferences registerObject:&prefLSBackgroundStyle default:0 forKey:@"LSBackgroundStyle"];
     [preferences registerObject:&prefLSCustomColor default:@"000000" forKey:@"LSCustomColor"];
-
-    // Controls color
-    [preferences registerBool:&prefUseLSTintCustomColor default:NO forKey:@"useLSTintCustomColor"];
+    [preferences registerObject:&prefLSTintStyle default:0 forKey:@"LSTintStyle"];
     [preferences registerObject:&prefLSTintCustomColor default:@"000000" forKey:@"LSTintCustomColor"];
 
     // LS Hiding
@@ -369,19 +518,26 @@ float adjunctHeight = 0;
 
     // CC swipe gestures
     [preferences registerBool:&prefCCUseSwipeGestures default:NO forKey:@"CCUseSwipeGestures"];
+    [preferences registerBool:&prefCCUseTapticFeedback default:YES forKey:@"CCUseTapticFeedback"];
 
     // CC Hiding
     [preferences registerBool:&prefCCHideTime default:NO forKey:@"CCHideTime"];
     [preferences registerBool:&prefCCHideControls default:NO forKey:@"CCHideControls"];
     [preferences registerBool:&prefCCHideVolume default:NO forKey:@"CCHideVolume"];
 
-    // CC tint
-    [preferences registerBool:&prefUseCCTintCustomColor default:NO forKey:@"useCCTintCustomColor"];
+    // CC coloring
+    [preferences registerObject:&prefCCBackgroundStyle default:@"0" forKey:@"CCBackgroundStyle"];
+    [preferences registerObject:&prefCCCustomColor default:@"000000" forKey:@"CCCustomColor"];
+    [preferences registerObject:&prefCCTintStyle default:@(0) forKey:@"CCTintStyle"];
     [preferences registerObject:&prefCCTintCustomColor default:@"000000" forKey:@"CCTintCustomColor"];
 
     // CC Song artwork
     [preferences registerObject:&prefCCArtworkRadius default:@"0" forKey:@"CCArtworkRadius"];
     [preferences registerBool:&prefCCHideSourceIcon default:NO forKey:@"CCHideSourceIcon"];
 
+    backgroundColor = [UIColor whiteColor];
+    tintColor = [UIColor whiteColor];
+
     %init;
+    if([prefCCBackgroundStyle intValue] == 1 || [prefCCBackgroundStyle intValue] == 1) %init(ArtworkColorNotification);
 }
