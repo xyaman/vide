@@ -4,39 +4,6 @@
     <dict>
         <key>items</key>
         <array>
-            <dict>
-                <key>cell</key>
-                <string>PSGroupCell</string>
-                <key>label</key>
-                <string>Touch gestures</string>
-                <key>footerText</key>
-                <string>Swipe left to go backwards. Swipe right to go forward.</string>
-            </dict>
-            <dict>
-                <key>cell</key>
-                <string>PSSwitchCell</string>
-                <key>default</key>
-                <false/>
-                <key>label</key>
-                <string>Use swipe gestures</string>
-                <key>key</key>
-                <string>CCUseSwipeGestures</string>
-                <key>defaults</key>
-                <string>com.xyaman.videpreferences</string>
-            </dict>
-            <dict>
-                <key>cell</key>
-                <string>PSSwitchCell</string>
-                <key>default</key>
-                <true/>
-                <key>label</key>
-                <string>Use taptic feedback</string>
-                <key>key</key>
-                <string>CCUseTapticFeedback</string>
-                <key>defaults</key>
-                <string>com.xyaman.videpreferences</string>
-            </dict>
-
             <!-- Hide options -->
             <dict>
                 <key>cell</key>
@@ -50,7 +17,7 @@
                 <key>default</key>
                 <false/>
                 <key>label</key>
-                <string>Hide time slider</string>
+                <string>Hide Time Slider</string>
                 <key>key</key>
                 <string>CCHideTime</string>
                 <key>defaults</key>
@@ -62,7 +29,7 @@
                 <key>default</key>
                 <false/>
                 <key>label</key>
-                <string>Hide controls</string>
+                <string>Hide Controls</string>
                 <key>key</key>
                 <string>CCHideControls</string>
                 <key>defaults</key>
@@ -74,7 +41,7 @@
                 <key>default</key>
                 <false/>
                 <key>label</key>
-                <string>Hide volume slider</string>
+                <string>Hide Volume Slider</string>
                 <key>key</key>
                 <string>CCHideVolume</string>
                 <key>defaults</key>
@@ -87,8 +54,6 @@
                 <string>PSGroupCell</string>
                 <key>label</key>
                 <string>Background</string>
-                <key>footerText</key>
-                <string>Automatic changes color based on song artwork</string>
             </dict>
             <dict>
                 <key>cell</key>
@@ -102,7 +67,7 @@
                 <key>validTitles</key>
                 <array>
                     <string>Default</string>
-                    <string>Automatic</string>
+                    <string>Artwork Color</string>
                     <string>Custom</string>
                 </array>
                 <key>default</key>
@@ -133,8 +98,6 @@
                 <string>PSGroupCell</string>
                 <key>label</key>
                 <string>Custom tint color</string>
-                <key>footerText</key>
-                <string>Automatic changes tint based on song artwork</string>
             </dict>
             <dict>
                 <key>cell</key>
@@ -148,7 +111,7 @@
                 <key>validTitles</key>
                 <array>
                     <string>Default</string>
-                    <string>Automatic</string>
+                    <string>Artwork Color</string>
                     <string>Custom</string>
                 </array>
                 <key>default</key>
@@ -164,7 +127,7 @@
                 <key>cellClass</key>
                 <string>GcColorPickerCell</string>
                 <key>label</key>
-                <string>Custom color</string>
+                <string>Custom Color</string>
                 <key>fallback</key>
                 <string>000000</string>
                 <key>key</key>
@@ -172,50 +135,8 @@
                 <key>defaults</key>
                 <string>com.xyaman.videpreferences</string>
             </dict>
-
-            <!-- Artwork -->
-            <dict>
-                <key>cell</key>
-                <string>PSGroupCell</string>
-                <key>label</key>
-                <string>Artwork</string>
-            </dict>
-            <dict>
-                <key>cell</key>
-                <string>PSSwitchCell</string>
-                <key>label</key>
-                <string>Hide now playing app icon</string>
-                <key>default</key>
-                <false/>
-                <key>key</key>
-                <string>CCHideSourceIcon</string>
-                <key>defaults</key>
-                <string>com.xyaman.videpreferences</string>
-            </dict>
-            <dict>
-                <key>cell</key>
-                <string>PSStaticTextCell</string>
-                <key>label</key>
-                <string>Radius</string>
-            </dict>
-            <dict>
-                <key>cell</key>
-                <string>PSSliderCell</string>
-                <key>default</key>
-                <real>0</real>
-                <key>min</key>
-                <real>0</real>
-                <key>max</key>
-                <real>130</real>
-                <key>showValue</key>
-                <true/>
-                <key>key</key>
-                <string>CCArtworkRadius</string>
-                <key>defaults</key>
-                <string>com.xyaman.videpreferences</string>
-            </dict>
         </array>
         <key>title</key>
-        <string>CC Media Player</string>
+        <string>CC Appearance</string>
     </dict>
 </plist>

@@ -1,70 +1,186 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-    <key>items</key>
-    <array>
-       <dict>
-            <key>cell</key>
-            <string>PSGroupCell</string>
-            <key>label</key>
-            <string>Customization</string>
-            <key>footerText</key>
-            <string>Most changes require a respring.</string>
-        </dict>
-        <dict>
-            <key>cell</key>
-            <string>PSLinkCell</string>
-            <key>label</key>
-            <string>LS Media Player</string>
-            <key>detail</key>
-            <string>VDESubListController</string>
-            <key>VDESub</key>
-            <string>LSMediaPlayer</string>
-        </dict> 
-        <dict>
-            <key>cell</key>
-            <string>PSLinkCell</string>
-            <key>label</key>
-            <string>CC Media Player</string>
-            <key>detail</key>
-            <string>VDESubListController</string>
-            <key>VDESub</key>
-            <string>CCMediaPlayer</string>
-        </dict> 
-        <!-- Other -->
-        <dict>
-            <key>cell</key>
-            <string>PSGroupCell</string>
-            <key>label</key>
-            <string>Other</string>
-        </dict>
-        <dict>
-            <key>cellClass</key>
-            <string>HBTwitterCell</string>  
-            <key>label</key>
-            <string>Xyaman</string>
-            <key>user</key> 
-            <string>xyamanDEV</string>
-        </dict>
-        <dict>
-            <key>cellClass</key>
-            <string>HBLinkTableCell</string>
-            <key>label</key>
-            <string>Donate me ☕️</string>
-            <key>url</key>
-            <string>https://paypal.me/xyamandev</string>
-        </dict>
-        <dict>
-            <key>cellClass</key>
-            <string>HBLinkTableCell</string>
-            <key>label</key>
-            <string>Source Code ⚙️</string>
-            <key>url</key>
-            <string>https://github.com/xyaman/visualyzer</string>
-        </dict>
-    </array>
-    <key>title</key>
-    <string>Vide</string>
-</dict>
+    <dict>
+        <key>items</key>
+        <array>
+            <dict>
+                <key>cell</key>
+                <string>PSGroupCell</string>
+                <key>headerCellClass</key>
+                <string>HBPackageNameHeaderCell</string>
+                <key>condensed</key>
+                <true/>
+                <key>icon</key>
+                <string>icon.png</string>
+                <key>packageIdentifier</key>
+                <string>com.xyaman.vide</string>
+                <key>footerText</key>
+                <string>Customize your Lockscreen and CC media player.</string>
+                <key>footerAlignment</key>
+                <integer>1</integer>
+            </dict>
+
+            <!-- Enabled -->
+            <dict>
+                <key>cell</key>
+                <string>PSGroupCell</string>
+                <key>label</key>
+                <string>Settings</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSSwitchCell</string>
+                <key>default</key>
+                <false/>
+                <key>label</key>
+                <string>Enabled</string>
+                <key>key</key>
+                <string>isEnabled</string>
+                <key>defaults</key>
+                <string>com.xyaman.videpreferences</string>
+            </dict>
+
+            <!-- Groups -->
+            <dict>
+                <key>cell</key>
+                <string>PSGroupCell</string>
+                <key>label</key>
+                <string>LS Player Customization</string>
+                <key>footerText</key>
+                <string>Most changes require a respring.</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSLinkCell</string>
+                <key>label</key>
+                <string>Appearance</string>
+                <key>detail</key>
+                <string>VDESubListController</string>
+                <key>VDESub</key>
+                <string>LSAppearance</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSLinkCell</string>
+                <key>label</key>
+                <string>Artwork</string>
+                <key>detail</key>
+                <string>VDESubListController</string>
+                <key>VDESub</key>
+                <string>LSArtwork</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSLinkCell</string>
+                <key>label</key>
+                <string>Wave</string>
+                <key>detail</key>
+                <string>VDESubListController</string>
+                <key>VDESub</key>
+                <string>LSWave</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSLinkCell</string>
+                <key>label</key>
+                <string>Gestures</string>
+                <key>detail</key>
+                <string>VDESubListController</string>
+                <key>VDESub</key>
+                <string>LSGestures</string>
+            </dict>
+
+            <!-- CC Player -->
+            <dict>
+                <key>cell</key>
+                <string>PSGroupCell</string>
+                <key>label</key>
+                <string>CC Player Customization</string>
+                <key>footerText</key>
+                <string>Most changes require a respring.</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSLinkCell</string>
+                <key>label</key>
+                <string>Appearance</string>
+                <key>detail</key>
+                <string>VDESubListController</string>
+                <key>VDESub</key>
+                <string>CCAppearance</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSLinkCell</string>
+                <key>label</key>
+                <string>Artwork</string>
+                <key>detail</key>
+                <string>VDESubListController</string>
+                <key>VDESub</key>
+                <string>CCArtwork</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSLinkCell</string>
+                <key>label</key>
+                <string>Wave</string>
+                <key>detail</key>
+                <string>VDESubListController</string>
+                <key>VDESub</key>
+                <string>CCWave</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSLinkCell</string>
+                <key>label</key>
+                <string>Gestures</string>
+                <key>detail</key>
+                <string>VDESubListController</string>
+                <key>VDESub</key>
+                <string>CCGestures</string>
+            </dict>
+            <!-- Other -->
+            <dict>
+                <key>cell</key>
+                <string>PSGroupCell</string>
+                <key>label</key>
+                <string>Other</string>
+            </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSButtonCell</string>
+                <key>label</key>
+                <string>Restart mediaserverd</string>
+                <key>action</key>
+                <string>restartmsd:</string>
+            </dict>
+            <dict>
+                <key>cellClass</key>
+                <string>HBTwitterCell</string>
+                <key>label</key>
+                <string>Xyaman</string>
+                <key>user</key>
+                <string>xyamanDEV</string>
+            </dict>
+            <dict>
+                <key>cellClass</key>
+                <string>HBLinkTableCell</string>
+                <key>label</key>
+                <string>Donate me ☕️</string>
+                <key>url</key>
+                <string>https://paypal.me/xyamandev</string>
+            </dict>
+            <dict>
+                <key>cellClass</key>
+                <string>HBLinkTableCell</string>
+                <key>label</key>
+                <string>Source Code ⚙️</string>
+                <key>url</key>
+                <string>https://github.com/xyaman/visualyzer</string>
+            </dict>
+        </array>
+        <key>title</key>
+        <string>Vide</string>
+    </dict>
 </plist>

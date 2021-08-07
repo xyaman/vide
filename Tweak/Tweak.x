@@ -8,6 +8,8 @@ float adjunctHeight = 0;
 UIColor *backgroundColor = nil;
 UIColor *tintColor = nil;
 
+NSData *oldArtworkData = nil;
+
 // Only used when artwork color is enabled
 %group ArtworkColorNotification
 %hook SBMediaController
@@ -21,6 +23,16 @@ UIColor *tintColor = nil;
         NSDictionary *info = (__bridge NSDictionary *)(information);
 
         NSData *artworkData = [info objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtworkData];
+        if(oldArtworkData == nil) oldArtworkData = artworkData;
+        else {
+            if([oldArtworkData isEqualToData:artworkData]) {
+                oldArtworkData = artworkData;
+                return;
+            }
+        }
+
+        oldArtworkData = artworkData; 
+
         if(artworkData) {
             UIImage *artwork = [UIImage imageWithData:artworkData]; // TODO: Check if artwork can be null
             backgroundColor = [Kuro getPrimaryColor:artwork];
@@ -57,9 +69,9 @@ UIColor *tintColor = nil;
         return rect;
     }
 
-    if(prefLSHideTime) adjunctHeight -= 46;
-    if(prefLSHideControls) adjunctHeight -= 54;
-    if(prefLSHideVolume) adjunctHeight -= 46;
+    if(prefLSHideTime) adjunctHeight -= 48;
+    if(prefLSHideControls) adjunctHeight -= 55;
+    if(prefLSHideVolume) adjunctHeight -= 48;
     return rect;
 }
 %end
@@ -92,9 +104,9 @@ UIColor *tintColor = nil;
         self.sona = [[SNAWaveView alloc] initWithFrame:pv.frame];
         self.sona.coloringStyle = SNAColoringStyleSolid;
         self.sona.yOffset = 20;
-        self.sona.alpha = 0.5f;
+        self.sona.alpha = [prefLSWaveAlpha floatValue];
         self.sona.pointSensitivity = [prefLSWaveSens floatValue];
-        self.sona.pointNumber = 16;
+        self.sona.pointNumber = 8;
 
         if([prefLSWaveColorStyle intValue] == 1) {
             self.sona.pointColor = [Kuro isDarkColor:backgroundColor] ? [Kuro lighterColorForColor:backgroundColor] : [Kuro darkerColorForColor:backgroundColor];;
@@ -117,7 +129,7 @@ UIColor *tintColor = nil;
 %new
 - (void) updateColor:(NSNotification *) notification {
     PLPlatterView *pv = [self valueForKey:@"_platterView"];
-    pv.backgroundView.backgroundColor = backgroundColor;
+    if([prefLSBackgroundStyle intValue] == 1) pv.backgroundView.backgroundColor = backgroundColor;
 
     if(self.sona) {
 
@@ -126,6 +138,7 @@ UIColor *tintColor = nil;
         
         } else {
             [self.sona stop];
+            self.sona.hidden = NO;
         }
 
         if([prefLSWaveColorStyle intValue] == 1) {
@@ -152,37 +165,79 @@ UIColor *tintColor = nil;
    context == 1 (and 0?) CC Media player
  -----------------------*/
 %hook MRUNowPlayingView
-// %property (nonatomic, retain) SNAWaveView *sona;
+%property (nonatomic, retain) SNAWaveView *sona;
 - (void) didMoveToWindow {
     %orig;
 
     // LS (not background, radius, alpha, for this check CSAdjunctItemView)
     if(self.context == 2) {
        if(prefLSUseSwipeGestures) [self addSwipeGestures];
-
-       if(prefLSShowWave) {
-
-       }
     
     // CC (eveything)
     } else if(self.context != 2) {
        if(prefCCUseSwipeGestures) [self addSwipeGestures]; 
 
-        if([prefCCBackgroundStyle intValue] == 1) {
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateColor:) name:videUpdateColors object:nil];
+        // if([prefCCBackgroundStyle intValue] == 1) {
+            // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateColor:) name:videUpdateColors object:nil];
 
-        } else if([prefCCBackgroundStyle intValue] == 2) {
+        if([prefCCBackgroundStyle intValue] == 2) {
             self.backgroundColor = [GcColorPickerUtils colorWithHex:prefCCCustomColor];
         }
+
+        if(prefCCShowWave && !self.sona) {
+            self.sona = [[SNAWaveView alloc] initWithFrame:self.frame];
+            self.sona.coloringStyle = SNAColoringStyleSolid;
+            self.sona.yOffset = 20;
+            self.sona.alpha = [prefCCWaveAlpha floatValue];
+            self.sona.pointSensitivity = [prefCCWaveSens floatValue];
+            self.sona.pointNumber = 4;
+
+            if([prefCCWaveColorStyle intValue] == 1) {
+                self.sona.pointColor = [Kuro isDarkColor:backgroundColor] ? [Kuro lighterColorForColor:backgroundColor] : [Kuro darkerColorForColor:backgroundColor];;
+                [self.sona updateColors];
+            
+            } else if([prefCCWaveColorStyle intValue] == 2) {
+                self.sona.pointColor = [GcColorPickerUtils colorWithHex:prefCCWaveCustomColor];
+                [self.sona updateColors]; 
+            }
+
+            [self insertSubview:self.sona atIndex:0];
+
+            if([[%c(SBMediaController) sharedInstance] isPlaying]) [self.sona start];
+        }
+
+        if(prefCCShowWave || [prefCCBackgroundStyle intValue] == 1) 
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateColor:) name:videUpdateColors object:nil]; 
     }
 
+}
+
+- (void) setFrame:(CGRect) frame {
+    %orig;
+    if(self.sona) self.sona.frame = frame;
 }
 
 %new 
 - (void) updateColor:(NSNotification *)notification {
     // NSDictionary *userInfo = [notification userInfo];
     // self.backgroundColor = [userInfo objectForKey:@"background"];
-    self.backgroundColor = backgroundColor;
+    if([prefCCBackgroundStyle intValue] == 1) self.backgroundColor = backgroundColor;
+
+    if(self.sona) {
+
+        if([[%c(SBMediaController) sharedInstance] isPlaying]) {
+            [self.sona start];
+        
+        } else {
+            [self.sona stop];
+            self.sona.hidden = NO;
+        }
+
+        if([prefCCWaveColorStyle intValue] == 1) {
+            self.sona.pointColor = [Kuro isDarkColor:backgroundColor] ? [Kuro lighterColorForColor:backgroundColor] : [Kuro darkerColorForColor:backgroundColor];
+            [self.sona updateColors];
+        }
+    }
 }
 
 %new
@@ -193,6 +248,15 @@ UIColor *tintColor = nil;
     [self addGestureRecognizer:leftSwipe];
     if(self.context == 2) [lsScrollView.panGestureRecognizer requireGestureRecognizerToFail:leftSwipe];
 
+    // Play/Pause
+    if(self.context == 2) {;
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(play)];
+        [self addGestureRecognizer:tap];
+
+        // UILongPressGestureRecognizer *longTap = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(openPlayingApp)];
+        // [self addGestureRecognizer:longTap];
+    }
+
     UISwipeGestureRecognizer *rightSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(nextTrack)];
     rightSwipe.direction = UISwipeGestureRecognizerDirectionRight;
     [self addGestureRecognizer:rightSwipe];
@@ -200,7 +264,25 @@ UIColor *tintColor = nil;
 }
 
 %new
-- (void) play {}
+- (void) play {
+   if(prefLSUseTapticFeedback) {
+        UIImpactFeedbackGenerator *feedback = [[UIImpactFeedbackGenerator alloc] init];
+        [feedback prepare];
+        [[%c(SBMediaController) sharedInstance] togglePlayPauseForEventSource:0];
+        [feedback impactOccurred]; 
+        return;
+    }    
+
+    [[%c(SBMediaController) sharedInstance] togglePlayPauseForEventSource:0]; 
+}
+
+// %new
+// - (void) openPlayingApp {
+//     SBApplication *nowPlayingApp = [[%c(SBMediaController) sharedInstance] nowPlayingApplication];
+// 	if(nowPlayingApp) {
+// 		[[UIApplication sharedApplication] launchApplicationWithIdentifier:nowPlayingApp.bundleIdentifier suspended:NO];
+// 	}
+// }
 
 %new
 - (void) prevTrack {
@@ -591,6 +673,9 @@ UIColor *tintColor = nil;
 %ctor {
     preferences = [[HBPreferences alloc] initWithIdentifier:@"com.xyaman.videpreferences"];
 
+    [preferences registerBool:&isEnabled default:NO forKey:@"isEnabled"];
+    if(!isEnabled) return;
+
     // LS Swipe gestures
     [preferences registerBool:&prefLSUseSwipeGestures default:NO forKey:@"LSUseSwipeGestures"];
     [preferences registerBool:&prefLSUseTapticFeedback default:YES forKey:@"LSUseTapticFeedback"];
@@ -610,11 +695,12 @@ UIColor *tintColor = nil;
     [preferences registerObject:&prefLSWaveColorStyle default:@(1) forKey:@"LSWaveColorStyle"];
     [preferences registerObject:&prefLSWaveCustomColor default:@"000000" forKey:@"LSWaveCustomColor"];
     [preferences registerObject:&prefLSWaveSens default:@(4) forKey:@"LSWaveSens"];
+    [preferences registerObject:&prefLSWaveAlpha default:@(0.6) forKey:@"LSWaveAlpha"];
 
     // LS Hiding
-    [preferences registerBool:&prefLSHideTime default:NO forKey:@"LSHideTime"];
+    [preferences registerBool:&prefLSHideTime default:YES forKey:@"LSHideTime"];
     [preferences registerBool:&prefLSHideControls default:NO forKey:@"LSHideControls"];
-    [preferences registerBool:&prefLSHideVolume default:NO forKey:@"LSHideVolume"];
+    [preferences registerBool:&prefLSHideVolume default:YES forKey:@"LSHideVolume"];
 
     // Media player alpha
     [preferences registerObject:&prefLSAlpha default:@"1.0" forKey:@"LSAlpha"];
@@ -627,6 +713,13 @@ UIColor *tintColor = nil;
     // CC swipe gestures
     [preferences registerBool:&prefCCUseSwipeGestures default:NO forKey:@"CCUseSwipeGestures"];
     [preferences registerBool:&prefCCUseTapticFeedback default:YES forKey:@"CCUseTapticFeedback"];
+
+    // CC wave
+    [preferences registerBool:&prefCCShowWave default:NO forKey:@"CCShowWave"];
+    [preferences registerObject:&prefCCWaveColorStyle default:@(1) forKey:@"CCWaveColorStyle"];
+    [preferences registerObject:&prefCCWaveCustomColor default:@"000000" forKey:@"CCWaveCustomColor"];
+    [preferences registerObject:&prefCCWaveSens default:@(4) forKey:@"CCWaveSens"];
+    [preferences registerObject:&prefCCWaveAlpha default:@(0.6) forKey:@"CCWaveAlpha"];
 
     // CC Hiding
     [preferences registerBool:&prefCCHideTime default:NO forKey:@"CCHideTime"];
@@ -647,5 +740,5 @@ UIColor *tintColor = nil;
     tintColor = [UIColor whiteColor];
 
     %init;
-    if([prefCCBackgroundStyle intValue] == 1 || [prefCCBackgroundStyle intValue] == 1) %init(ArtworkColorNotification);
+    if([prefLSBackgroundStyle intValue] == 1 || [prefCCBackgroundStyle intValue] == 1 || prefLSShowWave) %init(ArtworkColorNotification);
 }

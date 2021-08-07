@@ -8,6 +8,7 @@
 
 // Preferences
 HBPreferences *preferences = nil;
+BOOL isEnabled = NO;
 
 NSString *prefLSAlpha = nil;
 NSString *prefLSRadius = nil;
@@ -27,6 +28,7 @@ BOOL prefLSShowWave = NO;
 NSNumber *prefLSWaveColorStyle = nil;
 NSString *prefLSWaveCustomColor = nil;
 NSNumber *prefLSWaveSens = nil;
+NSNumber *prefLSWaveAlpha = nil;
 
 // LS Hiding
 BOOL prefLSHideTime = NO;
@@ -42,6 +44,13 @@ NSString *prefCCBackgroundStyle = nil;
 NSString *prefCCCustomColor = nil;
 NSNumber *prefCCTintStyle = nil;
 NSString *prefCCTintCustomColor = nil;
+
+// CC Wave
+BOOL prefCCShowWave = NO;
+NSNumber *prefCCWaveColorStyle = nil;
+NSString *prefCCWaveCustomColor = nil;
+NSNumber *prefCCWaveSens = nil;
+NSNumber *prefCCWaveAlpha = nil;
 
 // CC Hiding
 BOOL prefCCHideTime = NO;
@@ -74,10 +83,20 @@ NSString *videUpdateColors = @"videUpdateColors";
 -(UIViewController *)_viewControllerForAncestor;
 @end
 
+@interface SBApplication : NSObject
+@property (nonatomic, readonly) NSString *bundleIdentifier;                                                                                     //@synthesize bundleIdentifier=_bundleIdentifier - In the implementation block
+@end
+
 @interface SBMediaController : NSObject
 + (id)sharedInstance;
 - (BOOL) isPlaying;
 - (BOOL)changeTrack:(int)arg1 eventSource:(long long)arg2;
+- (BOOL)togglePlayPauseForEventSource:(long long)arg1;
+- (SBApplication *)nowPlayingApplication;
+@end
+
+@interface UIApplication ()
+-(BOOL)launchApplicationWithIdentifier:(id)arg1 suspended:(BOOL)arg2 ;
 @end
 
 @interface MRUNowPlayingViewController : UIViewController
@@ -87,6 +106,7 @@ NSString *videUpdateColors = @"videUpdateColors";
 
 @interface MRUNowPlayingView : UIView
 @property(assign,nonatomic) long long context;
+@property(nonatomic, retain) SNAWaveView *sona;
 - (void) addSwipeGestures;
 @end
 
