@@ -1,6 +1,6 @@
 Package: com.xyaman.vide
 Name: Vide
-Version: 0.0.1
+Version: 0.0.2
 Architecture: iphoneos-arm
 Description: Customize your Lockscreen and CC media player.
 Maintainer: Xyaman

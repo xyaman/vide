@@ -122,8 +122,10 @@ NSData *oldArtworkData = nil;
         if([[%c(SBMediaController) sharedInstance] isPlaying]) [self.sona start];
     }
 
-    if(prefLSShowWave || [prefLSBackgroundStyle intValue] == 1) 
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateColor:) name:videUpdateColors object:nil]; 
+    if(prefLSShowWave || [prefLSBackgroundStyle intValue] == 1) {
+        [[NSNotificationCenter default] removeObserver:self name:videUpdateColors object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateColor:) name:videUpdateColors object:nil];
+    }
 }
 
 %new
@@ -206,8 +208,10 @@ NSData *oldArtworkData = nil;
             if([[%c(SBMediaController) sharedInstance] isPlaying]) [self.sona start];
         }
 
-        if(prefCCShowWave || [prefCCBackgroundStyle intValue] == 1) 
+        if(prefCCShowWave || [prefCCBackgroundStyle intValue] == 1) {
+            [[NSNotificationCenter default] removeObserver:self name:videUpdateColors object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateColor:) name:videUpdateColors object:nil]; 
+        }
     }
 
 }
@@ -385,6 +389,7 @@ NSData *oldArtworkData = nil;
     if(context == 2) {
         if([prefLSTintStyle intValue] == 1) {
             [self colorLabels:tintColor];
+            [[NSNotificationCenter default] removeObserver:self name:videUpdateColors object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTint:) name:videUpdateColors object:nil];
         
         } else if([prefLSTintStyle intValue] == 2) {
@@ -397,6 +402,7 @@ NSData *oldArtworkData = nil;
 
         if([prefCCTintStyle intValue] == 1) {
             [self colorLabels:tintColor];
+            [[NSNotificationCenter default] removeObserver:self name:videUpdateColors object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTint:) name:videUpdateColors object:nil];
         
         } else if([prefCCTintStyle intValue] == 2) {
@@ -434,6 +440,7 @@ NSData *oldArtworkData = nil;
 
 // Media player airplay
 %hook MRUNowPlayingRoutingButton
+%property (nonatomic, retain) UIVisualEffectView *blurView;
 
 - (void) didMoveToWindow {
     %orig;
@@ -456,19 +463,19 @@ NSData *oldArtworkData = nil;
         //     // [self colorLabels:tint];
         // }
 
-        if(prefLSAirplayBlur) {
+        if(prefLSAirplayBlur && !self.blurView) {
             self.backgroundColor = [UIColor clearColor];
             self.layer.cornerRadius = self.frame.size.width / 2;
             self.clipsToBounds = YES;
 
             UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-            UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-            blurEffectView.userInteractionEnabled = NO;
+            self.blurView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+            self.blurView.userInteractionEnabled = NO;
         
-            blurEffectView.frame = self.bounds;
-            blurEffectView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+            self.blurView.frame = self.bounds;
+            self.blurView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-            [self insertSubview:blurEffectView atIndex:0];
+            [self insertSubview:self.blurView atIndex:0];
         }
     }
 }
@@ -495,6 +502,7 @@ NSData *oldArtworkData = nil;
 
         if([prefLSTintStyle intValue] == 1) {
             self.elapsedTrack.backgroundColor = tintColor; 
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:videUpdateColors object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTint:) name:videUpdateColors object:nil];
         
         } else if([prefLSTintStyle intValue] == 2) {
@@ -506,6 +514,7 @@ NSData *oldArtworkData = nil;
         if(prefCCHideTime) self.hidden = YES;
 
         if([prefCCTintStyle intValue] == 1) {
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:videUpdateColors object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTint:) name:videUpdateColors object:nil];
         
         } else if([prefCCTintStyle intValue] == 2) {
@@ -538,6 +547,7 @@ NSData *oldArtworkData = nil;
 
         if([prefLSTintStyle intValue] == 1) {
             [self changeButtonsColor:tintColor];
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:videUpdateColors object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTint:) name:videUpdateColors object:nil];
         
         } else if([prefLSTintStyle intValue] == 2) {
@@ -550,6 +560,7 @@ NSData *oldArtworkData = nil;
         if(prefCCHideControls) self.hidden = YES;
 
         if([prefCCTintStyle intValue] == 1) {
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:videUpdateColors object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTint:) name:videUpdateColors object:nil];
         
         } else if([prefCCTintStyle intValue] == 2) {
@@ -620,6 +631,7 @@ NSData *oldArtworkData = nil;
 
         if([prefLSTintStyle intValue] == 1) {
             self.slider.minimumTrackTintColor = tintColor;
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:videUpdateColors object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTint:) name:videUpdateColors object:nil];
         
         } else if([prefLSTintStyle intValue] == 2) {
@@ -631,6 +643,7 @@ NSData *oldArtworkData = nil;
         if(prefCCHideVolume) self.hidden = YES;
 
         if([prefCCTintStyle intValue] == 1) {
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:videUpdateColors object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTint:) name:videUpdateColors object:nil];
         
         } else if([prefCCTintStyle intValue] == 2) {

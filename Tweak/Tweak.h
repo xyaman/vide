@@ -161,6 +161,7 @@ NSString *videUpdateColors = @"videUpdateColors";
 @end
 
 @interface MRUNowPlayingRoutingButton : UIButton
+@property(nonatomic, retain) UIVisualEffectView *blurView;
 @end
 
 @interface MRUNowPlayingControlsView : UIView
