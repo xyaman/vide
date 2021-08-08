@@ -123,7 +123,7 @@ NSData *oldArtworkData = nil;
     }
 
     if(prefLSShowWave || [prefLSBackgroundStyle intValue] == 1) {
-        [[NSNotificationCenter default] removeObserver:self name:videUpdateColors object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:videUpdateColors object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateColor:) name:videUpdateColors object:nil];
     }
 }
@@ -209,7 +209,7 @@ NSData *oldArtworkData = nil;
         }
 
         if(prefCCShowWave || [prefCCBackgroundStyle intValue] == 1) {
-            [[NSNotificationCenter default] removeObserver:self name:videUpdateColors object:nil];
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:videUpdateColors object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateColor:) name:videUpdateColors object:nil]; 
         }
     }
@@ -389,7 +389,7 @@ NSData *oldArtworkData = nil;
     if(context == 2) {
         if([prefLSTintStyle intValue] == 1) {
             [self colorLabels:tintColor];
-            [[NSNotificationCenter default] removeObserver:self name:videUpdateColors object:nil];
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:videUpdateColors object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTint:) name:videUpdateColors object:nil];
         
         } else if([prefLSTintStyle intValue] == 2) {
@@ -402,7 +402,7 @@ NSData *oldArtworkData = nil;
 
         if([prefCCTintStyle intValue] == 1) {
             [self colorLabels:tintColor];
-            [[NSNotificationCenter default] removeObserver:self name:videUpdateColors object:nil];
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:videUpdateColors object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateTint:) name:videUpdateColors object:nil];
         
         } else if([prefCCTintStyle intValue] == 2) {
