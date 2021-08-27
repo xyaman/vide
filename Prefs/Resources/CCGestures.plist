@@ -10,7 +10,7 @@
                 <key>label</key>
                 <string>Touch gestures</string>
                 <key>footerText</key>
-                <string>Swipe left to go backwards. Tap to play/pause. Swipe right to go forward.</string>
+                <string>Swipe left to go backwards. Swipe right to go forward.</string>
             </dict>
             <dict>
                 <key>cell</key>

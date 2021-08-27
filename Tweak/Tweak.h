@@ -13,6 +13,7 @@ BOOL isEnabled = NO;
 NSString *prefLSAlpha = nil;
 NSString *prefLSRadius = nil;
 BOOL prefLSAirplayBlur = NO;
+BOOL prefKumquatComp = NO;
 
 // LS Coloring
 NSNumber *prefLSBackgroundStyle = nil;

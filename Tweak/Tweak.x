@@ -62,6 +62,7 @@ NSData *oldArtworkData = nil;
 %hook CSMediaControlsViewController
 -(CGRect)_suggestedFrameForMediaControls {
     CGRect rect = %orig;
+    NSLog(@"[TakoTweak] %@", NSStringFromCGRect(rect));
 
     if(!adjunctHeight) {
         adjunctHeight = rect.size.height;
@@ -81,8 +82,9 @@ NSData *oldArtworkData = nil;
 %property (nonatomic, retain) SNAWaveView *sona;
 - (void) didMoveToWindow {
     %orig;
-
     PLPlatterView *pv = [self valueForKey:@"_platterView"];
+
+    self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, adjunctHeight);
 
     // Alpha
     pv.backgroundView.alpha = [prefLSAlpha floatValue];
@@ -151,8 +153,11 @@ NSData *oldArtworkData = nil;
 }
 
 - (CGSize)intrinsicContentSize {
+    if(prefKumquatComp) return %orig;
+
     self.sona.frame = CGRectMake(0, 0, self.frame.size.width, adjunctHeight);
-    return CGSizeMake(self.frame.size.width, adjunctHeight);
+    // 1000 temp fix
+    return CGSizeMake(1000, adjunctHeight);
 }
 
 - (void) removeFromSuperview {
@@ -462,11 +467,12 @@ NSData *oldArtworkData = nil;
         //     // UIColor *tint = [GcColorPickerUtils colorWithHex:prefLSTintCustomColor];
         //     // [self colorLabels:tint];
         // }
+        
 
         if(prefLSAirplayBlur && !self.blurView) {
             self.backgroundColor = [UIColor clearColor];
-            self.layer.cornerRadius = self.frame.size.width / 2;
-            self.clipsToBounds = YES;
+            // self.layer.cornerRadius = self.frame.size.width / 2;
+            // self.clipsToBounds = YES;
 
             UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
             self.blurView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
@@ -478,6 +484,12 @@ NSData *oldArtworkData = nil;
             [self insertSubview:self.blurView atIndex:0];
         }
     }
+}
+
+- (void) setFrame:(CGRect) frame {
+    %orig;
+    self.layer.cornerRadius = self.frame.size.width / 2;
+    self.clipsToBounds = YES;
 }
 
 // %new
@@ -688,6 +700,8 @@ NSData *oldArtworkData = nil;
 
     [preferences registerBool:&isEnabled default:NO forKey:@"isEnabled"];
     if(!isEnabled) return;
+
+    [preferences registerBool:&prefKumquatComp default:NO forKey:@"kumquatComp"];
 
     // LS Swipe gestures
     [preferences registerBool:&prefLSUseSwipeGestures default:NO forKey:@"LSUseSwipeGestures"];

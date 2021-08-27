@@ -200,6 +200,18 @@
                 <key>defaults</key>
                 <string>com.xyaman.videpreferences</string>
             </dict>
+            <dict>
+                <key>cell</key>
+                <string>PSSwitchCell</string>
+                <key>label</key>
+                <string>Kumquat Compatibility</string>
+                <key>default</key>
+                <false/>
+                <key>key</key>
+                <string>kumquatComp</string>
+                <key>defaults</key>
+                <string>com.xyaman.videpreferences</string>
+            </dict>
         </array>
         <key>title</key>
         <string>LS Appearance</string>
