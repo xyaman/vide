@@ -68,7 +68,7 @@ BOOL prefCCHideSourceIcon = NO;
 /*----------------------
  / Notifications
  -----------------------*/
-NSString *videUpdateColors = @"videUpdateColors";
+NSString *videArtworkChanged = @"videArtworkChanged";
 
 
 // @interface CSMediaControlsViewController : UIViewController
@@ -112,8 +112,10 @@ NSString *videUpdateColors = @"videUpdateColors";
 @end
 
 @interface CSAdjunctItemView : UIView
+@property (nonatomic) CGSize sizeToMimic;
 @property(nonatomic, retain) SNAWaveView *sona;
-- (void) setSizeToMimic:(CGSize)arg1;
+
+-(CGSize)intrinsicContentSize;
 - (void) _updateSizeToMimic;
 @end
 
